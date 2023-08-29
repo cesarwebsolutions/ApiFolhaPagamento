@@ -38,7 +38,7 @@ namespace ApiFolhaPagamento.Controllers
             return Ok(usuario);
         }
 
-        [HttpPut("{id")]
+        [HttpPut("{id}")]
         public async Task<ActionResult<UsuarioModel>> Atualizar([FromBody] UsuarioModel usuarioModel, int id)
         {
             usuarioModel.Id = id;
@@ -47,7 +47,7 @@ namespace ApiFolhaPagamento.Controllers
             return Ok(usuario);
         }
 
-        [HttpDelete("{id")]
+        [HttpDelete("{id}")]
         public async Task<ActionResult<UsuarioModel>> Atualizar(int id)
         {
             await _usuarioRepositorio.Apagar(id);

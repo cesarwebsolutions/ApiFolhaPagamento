@@ -1,22 +1,37 @@
-﻿using ApiFolhaPagamento.Models;
+﻿using ApiFolhaPagamento.Data;
+using ApiFolhaPagamento.Models;
+using ApiFolhaPagamento.Repositorios;
+using ApiFolhaPagamento.Repositorios.Interfaces;
 using ApiFolhaPagamento.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiFolhaPagamento.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class LoginController : Controller
+    [Route("api")]
+    public class LoginController : ControllerBase
     {
+        private readonly ILogin _loginRepositorio;
+
+        public LoginController(ILogin loginRepositorio)
+        {
+            _loginRepositorio = loginRepositorio;
+        }
         [HttpPost]
+        [Route("login")]
         public async Task<ActionResult<dynamic>> AuthenticateAsync([FromBody] UsuarioModel usuario)
         {
-            //var usuario = {"Nome": "teste", "senha": 'fdjakhsdjkhf'}
-            //return View();
+            var validaLogin = await _loginRepositorio.Login(usuario.Email, usuario.Senha);
+            if (validaLogin)
+            {
+                var token = TokenService.GenerateToken(usuario);
+                return token;
+            }
+        //return View();
+        
 
-            var token = TokenService.GenerateToken(usuario);
-
-            return token;
+            return NotFound(new {message = "usuario invalido"});
         }
     }
 }
