@@ -26,6 +26,7 @@ namespace ApiFolhaPagamento
                     options => options.UseSqlServer(builder.Configuration.GetConnectionString("DataBase"))
                 );
 
+            builder.Services.AddScoped<ILogin, LoginRepositorio>();
             builder.Services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
 
             var chave = Encoding.ASCII.GetBytes(Settings.Secret());
