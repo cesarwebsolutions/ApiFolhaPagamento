@@ -5,6 +5,6 @@ namespace ApiFolhaPagamento.Repositorios.Interfaces
 {
     public interface ILogin
     {
-        Task<bool> Login(string email, string senha);
+        Task<string> Login(string email, string senha);
     }
 }
