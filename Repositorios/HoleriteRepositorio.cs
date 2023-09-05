@@ -46,7 +46,7 @@ namespace WebRhProject.Services
             var holerite = _dbContext.Holerites.Find(id);
             if (holerite == null)
             {
-                throw new DbUpdateConcurrencyException("Holerite not found");
+                throw new DbUpdateConcurrencyException("Holerite não encontrado");
             }
 
             _dbContext.Holerites.Remove(holerite);

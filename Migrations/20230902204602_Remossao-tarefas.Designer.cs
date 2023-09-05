@@ -4,6 +4,7 @@ using ApiFolhaPagamento.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiFolhaPagamento.Migrations
 {
     [DbContext(typeof(SistemaFolhaPagamentoDBContex))]
-    partial class SistemaFolhaPagamentoDBContexModelSnapshot : ModelSnapshot
+    [Migration("20230902204602_Remossao-tarefas")]
+    partial class Remossaotarefas
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,29 +61,6 @@ namespace ApiFolhaPagamento.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TbBeneficio");
-                });
-
-            modelBuilder.Entity("ApiFolhaPagamento.Models.CargoColaboradorModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("CargoId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ColaboradorId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Funcao")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TbCargoColaborador");
                 });
 
             modelBuilder.Entity("ApiFolhaPagamento.Models.CargoModel", b =>
@@ -294,23 +273,6 @@ namespace ApiFolhaPagamento.Migrations
                     b.ToTable("TbPermissoes");
                 });
 
-            modelBuilder.Entity("ApiFolhaPagamento.Models.TiposHolerite", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("TipoHolerite")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TbTipoHolerite");
-                });
-
             modelBuilder.Entity("ApiFolhaPagamento.Models.UsuarioModel", b =>
                 {
                     b.Property<int>("Id")
@@ -339,7 +301,7 @@ namespace ApiFolhaPagamento.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TbUsuario");
+                    b.ToTable("Usuarios");
                 });
 
             modelBuilder.Entity("ApiFolhaPagamento.Models.ColaboradorModel", b =>

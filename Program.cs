@@ -38,6 +38,7 @@ namespace ApiFolhaPagamento
 
 
 
+
             var chave = Encoding.ASCII.GetBytes(Settings.Secret());
             builder.Services.AddAuthentication(x =>
             {
