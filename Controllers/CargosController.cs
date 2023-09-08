@@ -41,6 +41,14 @@ namespace ApiFolhaPagamento.Controllers.API
         {
             try
             {
+                var existingCargo = _cargoRepositorio.BuscarPorNome(cargo.Nome);
+
+                if (existingCargo != null)
+                {
+                    return BadRequest("Já existe um cargo cadastrado com o mesmo Nome.");
+                }
+
+
                 _cargoRepositorio.Adicionar(cargo);
                 return CreatedAtAction(nameof(Get), new { id = cargo.Id }, cargo);
             }
@@ -54,7 +62,7 @@ namespace ApiFolhaPagamento.Controllers.API
             }
         }
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] CargoModel cargoDTO)
+        public IActionResult Put(int id, [FromBody] CargoModel cargoModel)
         {
             try
             {
@@ -66,7 +74,7 @@ namespace ApiFolhaPagamento.Controllers.API
                 }
 
                 // Atualize os dados do cargo com os valores do DTO
-                existingCargo.Nome = cargoDTO.Nome;
+                existingCargo.Nome = cargoModel.Nome;
 
                 _cargoRepositorio.Atualizar(existingCargo);
             }
@@ -75,7 +83,7 @@ namespace ApiFolhaPagamento.Controllers.API
                 return NotFound();
             }
 
-            return Ok(cargoDTO);
+            return Ok(cargoModel);
         }
 
 

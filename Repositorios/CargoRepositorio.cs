@@ -25,7 +25,7 @@ namespace ApiFolhaPagamento.Services
         }
         public void Atualizar(CargoModel obj)
         {
-          
+
             try
             {
                 _dbContext.Update(obj);
@@ -43,6 +43,14 @@ namespace ApiFolhaPagamento.Services
         public CargoModel BuscarPorId(int id)
         {
             return _dbContext.Cargos.Find(id);
+        }
+
+        public CargoModel BuscarPorNome(string nome)
+        {
+
+            var cargo = _dbContext.Cargos.FirstOrDefault(c => c.Nome == nome);
+
+            return cargo;
         }
 
 

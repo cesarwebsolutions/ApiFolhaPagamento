@@ -2,7 +2,6 @@
 using ApiFolhaPagamento.Models;
 using ApiFolhaPagamento.Services;
 using Microsoft.AspNetCore.Mvc;
-using WebRhProject.Services;
 
 namespace ApiFolhaPagamento.Controllers.API
 {
@@ -44,7 +43,15 @@ namespace ApiFolhaPagamento.Controllers.API
         {
             try
             {
+                var existingColaborador = _colaboradorRepositorio.BuscarPorCPF(colaborador.CPF);
+
+                if (existingColaborador != null)
+                {
+                    return BadRequest("Já existe um colaborador cadastrado com o mesmo CPF.");
+                }
+
                 _colaboradorRepositorio.Adicionar(colaborador);
+
                 return CreatedAtAction(nameof(Get), new { id = colaborador.Id }, colaborador);
             }
             catch (FileNotFoundException ex)
@@ -56,6 +63,7 @@ namespace ApiFolhaPagamento.Controllers.API
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] ColaboradorModel colaborador)
         {

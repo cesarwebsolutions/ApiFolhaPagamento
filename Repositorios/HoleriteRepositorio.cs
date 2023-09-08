@@ -4,19 +4,23 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ApiFolhaPagamento.Data;
 using ApiFolhaPagamento.Models;
+using ApiFolhaPagamento.Services;
 
-namespace WebRhProject.Services
+namespace ApiFolhaPagamento.Services
 {
     public class HoleriteRepositorio
     {
         private readonly SistemaFolhaPagamentoDBContex _dbContext;
+        private readonly ColaboradorRepositorio _colaboradorRepositorio;
 
-        public HoleriteRepositorio(SistemaFolhaPagamentoDBContex sistemaFolhaPagamentoDBContex)
+        public HoleriteRepositorio(SistemaFolhaPagamentoDBContex sistemaFolhaPagamentoDBContex, ColaboradorRepositorio colaboradorRepositorio)
         {
             _dbContext = sistemaFolhaPagamentoDBContex;
+            _colaboradorRepositorio = colaboradorRepositorio;
         }
 
-        public List<HoleriteModel> GetAllHolerites()
+
+        public List<HoleriteModel> BuscarTodosHolerites()
         {
             return _dbContext.Holerites
                 .Include(h => h.Colaborador) 
@@ -24,7 +28,7 @@ namespace WebRhProject.Services
         }
 
 
-        public HoleriteModel GetHoleriteById(int id)
+        public HoleriteModel BuscarHoleritePorId(int id)
         {
             return _dbContext.Holerites.Find(id);
         }

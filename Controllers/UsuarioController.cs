@@ -20,6 +20,7 @@ namespace ApiFolhaPagamento.Controllers
         public async Task<ActionResult<List<UsuarioModel>>> BuscarTodosUsuarios()
         {
             List<UsuarioModel> usuarios = await _usuarioRepositorio.BuscarTodosUsuarios();
+
             return Ok(usuarios);
         }
 
@@ -27,6 +28,10 @@ namespace ApiFolhaPagamento.Controllers
         public async Task<ActionResult<UsuarioModel>> BuscarPorId(int id)
         {
             UsuarioModel usuarios = await _usuarioRepositorio.BuscarUsuario(id);
+            if (usuarios == null)
+            {
+                return NotFound("Usuario Não Encontrado");
+            }
             return Ok(usuarios);
         }
 
@@ -48,11 +53,11 @@ namespace ApiFolhaPagamento.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<UsuarioModel>> Atualizar(int id)
+        public async Task<ActionResult<UsuarioModel>> Apagar(int id)
         {
             await _usuarioRepositorio.Apagar(id);
 
-            return Ok(true);
+            return Ok("Usuario Deletado com Sucesso!");
         }
     }
 }

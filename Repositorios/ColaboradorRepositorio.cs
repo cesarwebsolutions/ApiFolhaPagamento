@@ -93,10 +93,14 @@ namespace ApiFolhaPagamento.Services
                 .ToList();
         }
 
-        public bool Exists(string cpf)
+        public ColaboradorModel BuscarPorCPF(string cpf)
         {
-            return _dbContext.Colaboradores.Any(c => c.CPF == cpf );
+        
+            var colaborador = _dbContext.Colaboradores.FirstOrDefault(c => c.CPF == cpf);
+
+            return colaborador;
         }
+
         public void Demitir(int id)
         {
             var colaborador = _dbContext.Colaboradores.Find(id);

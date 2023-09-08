@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace ApiFolhaPagamento.Models
 {
@@ -12,7 +13,7 @@ namespace ApiFolhaPagamento.Models
 
         [ForeignKey(nameof(Colaborador))]
         public int ColaboradorId { get; set; }
-
+        [JsonIgnore]
         public virtual ColaboradorModel? Colaborador { get; set; }
 
 
@@ -21,17 +22,16 @@ namespace ApiFolhaPagamento.Models
 
         [DisplayFormat(DataFormatString = "R$ {0:#,##0.00}")]
         [Display(Name = "Salário Bruto")]
-        public double SalarioBruto { get; set; }
+        public double? SalarioBruto { get; set; }
 
-
+        
         [DisplayFormat(DataFormatString = "R$ {0:#,##0.00}")]
         [Display(Name = "Desconto INSS")]
-        public double DescontoINSS { get; set; }
-
+        public double? DescontoINSS { get; set; }
 
         [DisplayFormat(DataFormatString = "R$ {0:#,##0.00}")]
         [Display(Name = "Desconto IRRF")]
-        public double DescontoIRRF { get; set; }
+        public double? DescontoIRRF { get; set; }
 
 
         [Display(Name = "Horas Trabalhadas")]
@@ -40,11 +40,10 @@ namespace ApiFolhaPagamento.Models
 
         [DisplayFormat(DataFormatString = "R$ {0:#,##0.00}")]
         [Display(Name = "Salário Líquido")]
-        public double SalarioLiquido { get; set; }
-
+        public double? SalarioLiquido { get; set; }
 
         [Display(Name = "Dependentes")]
-        public int DependentesHolerite { get; set; }
+        public int? DependentesHolerite { get; set; }
 
 
         public int? Tipo { get; set; }
