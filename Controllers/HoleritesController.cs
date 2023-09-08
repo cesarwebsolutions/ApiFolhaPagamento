@@ -23,7 +23,6 @@ namespace ApiFolhaPagamento.Controllers
             _colaboradorRepositorio = colaboradorRepositorio;
             _dbContext = sistemaFolhaPagamentoDBContex;
         }
-
         [HttpPost]
         public IActionResult Post([FromBody] HoleriteModel holerite)
         {
@@ -36,19 +35,55 @@ namespace ApiFolhaPagamento.Controllers
                     return NotFound("Colaborador não encontrado");
                 }
 
+                double salarioBase = 0.0;
+
+                // Verifica se o campo HorasExtras foi informado
+                if (holerite.HorasExtras.HasValue)
+                {
+                    // Calcula o Salário Bruto baseado nas horas trabalhadas e nas horas extras
+                    double percentualSalarioBase = (holerite.HorasNormais.Value / 220); // 220 é a carga horária padrão
+                    salarioBase = Math.Round(colaborador.SalarioBase * percentualSalarioBase, 2);
+
+                    // Define a taxa de adicional para horas extras (50% é comum, mas pode variar)
+                    double taxaAdicional = 0.5; // 50% de adicional
+
+                    double valorHoraExtra = salarioBase / 220 * taxaAdicional;
+                    double salarioBruto = salarioBase + (holerite.HorasExtras.Value * valorHoraExtra);
+
+                    holerite.SalarioBruto = Math.Round(salarioBruto, 2);
+                }
+                else
+                {
+                    // Calcula o Salário Bruto apenas com as horas normais
+                    double percentualSalarioBase = (holerite.HorasNormais.Value / 220); // 220 é a carga horária padrão
+                    salarioBase = Math.Round(colaborador.SalarioBase * percentualSalarioBase, 2);
+                    holerite.SalarioBruto = salarioBase;
+                }
+
                 // Calcula o desconto INSS
-                holerite.DescontoINSS = Math.Round(CalculaDescontoINSS(colaborador.SalarioBase), 2);
+                holerite.DescontoINSS = Math.Round(CalculaDescontoINSS(holerite.SalarioBruto.Value), 2);
 
                 // Calcula o desconto IRRF
-                holerite.DescontoIRRF = Math.Round(CalculaDescontoIRRF(colaborador.SalarioBase, holerite.DescontoIRRF ?? 0.0), 2);
+                holerite.DescontoIRRF = Math.Round(CalculaDescontoIRRF(holerite.SalarioBruto.Value, holerite.DescontoINSS ?? 0.0), 2);
 
                 // Soma os descontos
                 double descontos = holerite.DescontoINSS.Value + holerite.DescontoIRRF.Value;
 
                 // Calcula o salário líquido
-                holerite.SalarioBruto = colaborador.SalarioBase;
-                holerite.SalarioLiquido = Math.Round(colaborador.SalarioBase - descontos, 2);
+                holerite.SalarioLiquido = Math.Round(holerite.SalarioBruto.Value - descontos, 2);
                 holerite.DependentesHolerite = (int)colaborador.Dependentes;
+
+                var holeriteExistente = _dbContext.Holerites.FirstOrDefault(h =>
+                h.ColaboradorId == holerite.ColaboradorId &&
+                h.MesAno == holerite.MesAno &&
+                h.Tipo == holerite.Tipo);
+
+                if (holeriteExistente != null)
+                {
+                    // Retorne uma resposta de erro informando que o holerite já existe.
+                    return BadRequest("Já foi gerado um Holerite desse Tipo no Mês/Ano Selecionado.");
+                }
+
 
                 _holeriteRepositorio.AdicionarHolerite(holerite);
 
@@ -65,6 +100,8 @@ namespace ApiFolhaPagamento.Controllers
         }
 
 
+
+
         [HttpGet]
         public ActionResult<List<HoleriteModel>> BuscarTodosOsHolerites()
         {
@@ -75,18 +112,24 @@ namespace ApiFolhaPagamento.Controllers
         [HttpGet("{id}")]
         public ActionResult<HoleriteModel> BuscarPorId(int id)
         {
-            var colaborador = _holeriteRepositorio.BuscarHoleritePorId(id);
-            if (colaborador == null)
+            var holerite = _holeriteRepositorio.BuscarHoleritePorId(id);
+            if (holerite == null)
             {
                 return NotFound("Holerite Não Encontrado");
             }
-            return Ok(colaborador);
+            return Ok(holerite);
         }
 
         [HttpDelete("{id}")]
         public ActionResult<HoleriteModel> Apagar(int id)
         {
-             _holeriteRepositorio.DeletarHolerite(id);
+            var holerite = _holeriteRepositorio.BuscarHoleritePorId(id);
+
+            if (holerite == null)
+            {
+                return NotFound("Holerite Não Encontrado");
+            }
+            _holeriteRepositorio.DeletarHolerite(id);
 
             return Ok("Holerite Deletado com Sucesso!");
         }
@@ -146,8 +189,8 @@ namespace ApiFolhaPagamento.Controllers
             {
                 descontoIRRF = (salarioBaseAjustado * 0.275) - 869.36;
             }
-
             return descontoIRRF;
         }
+
     }
 }

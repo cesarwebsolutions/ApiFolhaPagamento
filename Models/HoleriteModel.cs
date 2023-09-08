@@ -35,8 +35,12 @@ namespace ApiFolhaPagamento.Models
 
 
         [Display(Name = "Horas Trabalhadas")]
-        public double HorasNormais { get; set; }
+        [Range(1, 220, ErrorMessage = "O campo HorasNormais deve estar entre 1 e 220.")]
+        public double? HorasNormais { get; set; }
 
+        [Display(Name = "Horas Extras")]
+
+        public double? HorasExtras { get; set; }
 
         [DisplayFormat(DataFormatString = "R$ {0:#,##0.00}")]
         [Display(Name = "Salário Líquido")]
