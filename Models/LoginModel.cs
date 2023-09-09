@@ -1,4 +1,6 @@
-﻿namespace ApiFolhaPagamento.Models
+﻿using ApiFolhaPagamento.Enums;
+
+namespace ApiFolhaPagamento.Models
 {
     public class LoginModel
     {

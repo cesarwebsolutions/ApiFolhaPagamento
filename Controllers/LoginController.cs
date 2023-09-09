@@ -27,9 +27,9 @@ namespace ApiFolhaPagamento.Controllers
             if (validaLogin == "erro")
             {
                 return Unauthorized(new { message = "usuario invalido" });
-
+                
             }
-            return Ok(new { token = validaLogin });
+            return Ok(new { token = validaLogin});
         }
     }
 }

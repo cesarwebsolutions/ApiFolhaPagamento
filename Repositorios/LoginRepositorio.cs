@@ -20,7 +20,7 @@ namespace ApiFolhaPagamento.Repositorios
 
             if (usuario != null)
             {
-                if (senha == usuario.Senha)
+                if(senha == usuario.Senha)
                 {
                     return TokenService.GenerateToken(usuario);
                 }

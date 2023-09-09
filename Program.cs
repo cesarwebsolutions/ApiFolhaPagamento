@@ -27,6 +27,7 @@ namespace ApiFolhaPagamento
                     options => options.UseSqlServer(builder.Configuration.GetConnectionString("DataBase"))
                 );
 
+            builder.Services.AddScoped<ILogin, LoginRepositorio>();
             builder.Services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
             builder.Services.AddScoped<CargoRepositorio>();
             builder.Services.AddScoped<ColaboradorRepositorio>();
