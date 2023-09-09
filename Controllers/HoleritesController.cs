@@ -34,6 +34,17 @@ namespace ApiFolhaPagamento.Controllers
                 {
                     return NotFound("Colaborador não encontrado");
                 }
+                var holeriteExistente = _dbContext.Holerites.FirstOrDefault(h =>
+                h.ColaboradorId == holerite.ColaboradorId &&
+                h.Mes == holerite.Mes &&
+                h.Ano == holerite.Ano &&
+                h.Tipo == holerite.Tipo);
+
+                if (holeriteExistente != null)
+                {
+                    return BadRequest(new { message = "Já existe um Holerite com mesmo Mês/Ano e Tipo cadastrado"});
+
+                }
 
                 double salarioBase = 0.0;
 
@@ -73,16 +84,6 @@ namespace ApiFolhaPagamento.Controllers
                 holerite.SalarioLiquido = Math.Round(holerite.SalarioBruto.Value - descontos, 2);
                 holerite.DependentesHolerite = (int)colaborador.Dependentes;
 
-                var holeriteExistente = _dbContext.Holerites.FirstOrDefault(h =>
-                h.ColaboradorId == holerite.ColaboradorId &&
-                h.MesAno == holerite.MesAno &&
-                h.Tipo == holerite.Tipo);
-
-                if (holeriteExistente != null)
-                {
-                    // Retorne uma resposta de erro informando que o holerite já existe.
-                    return BadRequest("Já foi gerado um Holerite desse Tipo no Mês/Ano Selecionado.");
-                }
 
 
                 _holeriteRepositorio.AdicionarHolerite(holerite);

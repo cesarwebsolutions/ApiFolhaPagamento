@@ -13,6 +13,7 @@ namespace ApiFolhaPagamento.Controllers
     public class LoginController : ControllerBase
     {
         private readonly ILogin _loginRepositorio;
+        private readonly IUsuarioRepositorio _usuarioRepositorio;
 
         public LoginController(ILogin loginRepositorio)
         {
@@ -20,18 +21,15 @@ namespace ApiFolhaPagamento.Controllers
         }
         [HttpPost]
         [Route("login")]
-        public async Task<ActionResult<dynamic>> AuthenticateAsync([FromBody] UsuarioModel usuario)
+        public async Task<ActionResult<dynamic>> AuthenticateAsync([FromBody] LoginModel login)
         {
-            var validaLogin = await _loginRepositorio.Login(usuario.Email, usuario.Senha);
-            if (validaLogin)
+            var validaLogin = await _loginRepositorio.Login(login.Email, login.Senha);
+            if (validaLogin == "erro")
             {
-                var token = TokenService.GenerateToken(usuario);
-                return token;
-            }
-        //return View();
-        
+                return Unauthorized(new { message = "usuario invalido" });
 
-            return NotFound(new {message = "usuario invalido"});
+            }
+            return Ok(new { token = validaLogin });
         }
     }
 }

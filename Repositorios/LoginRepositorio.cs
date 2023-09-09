@@ -1,7 +1,9 @@
 ﻿using ApiFolhaPagamento.Data;
 using ApiFolhaPagamento.Models;
 using ApiFolhaPagamento.Repositorios.Interfaces;
+using ApiFolhaPagamento.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 
 namespace ApiFolhaPagamento.Repositorios
 {
@@ -12,27 +14,19 @@ namespace ApiFolhaPagamento.Repositorios
         {
             _dbContext = sistemaFolhaPagamentoDBContex;
         }
-        public async Task<bool> Login(string email, string senha)
+        public async Task<string> Login(string email, string senha)
         {
-            var user = await _dbContext.Usuarios.FirstOrDefaultAsync(usuario => usuario.Email == email);
+            var usuario = await _dbContext.Usuarios.FirstOrDefaultAsync(usuario => usuario.Email == email);
 
-            if (user != null)
+            if (usuario != null)
             {
-                var passwordIsValid = VerifyPassword(senha, user.Senha);
-                return passwordIsValid;
+                if (senha == usuario.Senha)
+                {
+                    return TokenService.GenerateToken(usuario);
+                }
             }
 
-            return false;
-        }
-
-        private bool VerifyPassword(string providedPassword, string storedHash)
-        {
-            return providedPassword == storedHash ? true : false;
-            // Implement your password verification logic here.
-            // Compare the providedPassword with the storedHash (after applying the same hashing/salting algorithm).
-            // Return true if they match, otherwise return false.
-
-            
+            return "erro";
         }
     }
 }

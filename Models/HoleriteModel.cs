@@ -17,8 +17,14 @@ namespace ApiFolhaPagamento.Models
         public virtual ColaboradorModel? Colaborador { get; set; }
 
 
-        [Display(Name = "Mês/Ano")]
-        public int MesAno { get; set; }
+        [Display(Name = "Mês")]
+        [DataType(DataType.Date)]
+        public int Mes { get; set; }
+
+        [Display(Name = "Mês")]
+        [DataType(DataType.Date)]
+        public int Ano { get; set; }
+
 
         [DisplayFormat(DataFormatString = "R$ {0:#,##0.00}")]
         [Display(Name = "Salário Bruto")]
@@ -60,11 +66,12 @@ namespace ApiFolhaPagamento.Models
 
         }
 
-        public HoleriteModel(int id, ColaboradorModel colaborador, int mesAno, double salarioBruto, double descontoInss, double descontoIrrf, double horasNormais, double salarioLiquido, int tipo)
+        public HoleriteModel(int id, ColaboradorModel colaborador, int mes, int ano, double salarioBruto, double descontoInss, double descontoIrrf, double horasNormais, double salarioLiquido, int tipo)
         {
             Id = id;
             Colaborador = colaborador;
-            MesAno = mesAno;
+            Mes = mes;
+            Ano = ano;
             SalarioBruto = salarioBruto;
             DescontoINSS = descontoInss;
             DescontoIRRF = descontoIrrf;

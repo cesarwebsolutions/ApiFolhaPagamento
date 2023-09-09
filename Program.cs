@@ -32,6 +32,8 @@ namespace ApiFolhaPagamento
             builder.Services.AddScoped<ColaboradorRepositorio>();
             builder.Services.AddScoped<HoleriteRepositorio>();
             builder.Services.AddScoped<EmpresaRepositorio>();
+            builder.Services.AddScoped<ILogin, LoginRepositorio>();
+
 
 
 
