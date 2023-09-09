@@ -4,6 +4,7 @@ using ApiFolhaPagamento.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiFolhaPagamento.Migrations
 {
     [DbContext(typeof(SistemaFolhaPagamentoDBContex))]
-    partial class SistemaFolhaPagamentoDBContexModelSnapshot : ModelSnapshot
+    [Migration("20230908121654_ajustando-notnull")]
+    partial class ajustandonotnull
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -243,9 +245,6 @@ namespace ApiFolhaPagamento.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("Ano")
-                        .HasColumnType("int");
-
                     b.Property<int>("ColaboradorId")
                         .HasColumnType("int");
 
@@ -258,13 +257,10 @@ namespace ApiFolhaPagamento.Migrations
                     b.Property<double?>("DescontoIRRF")
                         .HasColumnType("float");
 
-                    b.Property<double?>("HorasExtras")
+                    b.Property<double>("HorasNormais")
                         .HasColumnType("float");
 
-                    b.Property<double?>("HorasNormais")
-                        .HasColumnType("float");
-
-                    b.Property<int>("Mes")
+                    b.Property<int>("MesAno")
                         .HasColumnType("int");
 
                     b.Property<double?>("SalarioBruto")

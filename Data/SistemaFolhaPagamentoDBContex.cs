@@ -10,14 +10,22 @@ namespace ApiFolhaPagamento.Data
         {
 
         }
-
+        public DbSet<ColaboradorModel> Colaboradores { get; set; }
         public DbSet<UsuarioModel> Usuarios { get; set; }
-        public DbSet<TarefaModel> Tarefas { get; set; }
+        public DbSet<CargoModel>? Cargos { get; set; }
+        public DbSet<EmpresaModel> Empresas { get; set; }
+        public DbSet<HoleriteModel> Holerites { get; set; }
+        public DbSet<BeneficioModel> Beneficios { get; set; }
+        public DbSet<Permissoes> Permissoes { get; set; }
+        public DbSet<TiposHolerite> TiposHolerite { get; set; }
+        public DbSet<CargoColaboradorModel> CargoColaborador { get; set; }
+        public DbSet<BeneficioColaboradorModel> BeneficioColaborador { get; set; }
+
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new UsuarioMap());
-            modelBuilder.ApplyConfiguration(new TarefaMap());
             base.OnModelCreating(modelBuilder);
         }
     }

@@ -4,6 +4,7 @@ using ApiFolhaPagamento.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiFolhaPagamento.Migrations
 {
     [DbContext(typeof(SistemaFolhaPagamentoDBContex))]
-    partial class SistemaFolhaPagamentoDBContexModelSnapshot : ModelSnapshot
+    [Migration("20230831013332_ApiController-Cargo-Colaborador-Holerite-Empresa")]
+    partial class ApiControllerCargoColaboradorHoleriteEmpresa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,68 +23,6 @@ namespace ApiFolhaPagamento.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
-
-            modelBuilder.Entity("ApiFolhaPagamento.Models.BeneficioColaboradorModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("BeneficioId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ColaboradorId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TbBeneficioColaborador");
-                });
-
-            modelBuilder.Entity("ApiFolhaPagamento.Models.BeneficioModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Descricao")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("Valor")
-                        .HasColumnType("float");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TbBeneficio");
-                });
-
-            modelBuilder.Entity("ApiFolhaPagamento.Models.CargoColaboradorModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("CargoId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ColaboradorId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Funcao")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TbCargoColaborador");
-                });
 
             modelBuilder.Entity("ApiFolhaPagamento.Models.CargoModel", b =>
                 {
@@ -243,34 +183,28 @@ namespace ApiFolhaPagamento.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("Ano")
-                        .HasColumnType("int");
-
                     b.Property<int>("ColaboradorId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DependentesHolerite")
+                    b.Property<int>("DependentesHolerite")
                         .HasColumnType("int");
 
-                    b.Property<double?>("DescontoINSS")
+                    b.Property<double>("DescontoINSS")
                         .HasColumnType("float");
 
-                    b.Property<double?>("DescontoIRRF")
+                    b.Property<double>("DescontoIRRF")
                         .HasColumnType("float");
 
-                    b.Property<double?>("HorasExtras")
+                    b.Property<double>("HorasNormais")
                         .HasColumnType("float");
 
-                    b.Property<double?>("HorasNormais")
-                        .HasColumnType("float");
-
-                    b.Property<int>("Mes")
+                    b.Property<int>("MesAno")
                         .HasColumnType("int");
 
-                    b.Property<double?>("SalarioBruto")
+                    b.Property<double>("SalarioBruto")
                         .HasColumnType("float");
 
-                    b.Property<double?>("SalarioLiquido")
+                    b.Property<double>("SalarioLiquido")
                         .HasColumnType("float");
 
                     b.Property<int?>("Tipo")
@@ -283,7 +217,7 @@ namespace ApiFolhaPagamento.Migrations
                     b.ToTable("TbHolerite");
                 });
 
-            modelBuilder.Entity("ApiFolhaPagamento.Models.Permissoes", b =>
+            modelBuilder.Entity("ApiFolhaPagamento.Models.TarefaModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -291,30 +225,21 @@ namespace ApiFolhaPagamento.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<string>("Permissao")
+                    b.Property<string>("Descricao")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Nome")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("TbPermissoes");
-                });
-
-            modelBuilder.Entity("ApiFolhaPagamento.Models.TiposHolerite", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("TipoHolerite")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
-                    b.ToTable("TbTipoHolerite");
+                    b.ToTable("Tarefas");
                 });
 
             modelBuilder.Entity("ApiFolhaPagamento.Models.UsuarioModel", b =>
@@ -335,9 +260,6 @@ namespace ApiFolhaPagamento.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("PermissaoId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Senha")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -345,7 +267,7 @@ namespace ApiFolhaPagamento.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TbUsuario");
+                    b.ToTable("Usuarios");
                 });
 
             modelBuilder.Entity("ApiFolhaPagamento.Models.ColaboradorModel", b =>

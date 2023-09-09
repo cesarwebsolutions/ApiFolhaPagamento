@@ -1,6 +1,7 @@
 using ApiFolhaPagamento.Data;
 using ApiFolhaPagamento.Repositorios;
 using ApiFolhaPagamento.Repositorios.Interfaces;
+using ApiFolhaPagamento.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -28,6 +29,17 @@ namespace ApiFolhaPagamento
 
             builder.Services.AddScoped<ILogin, LoginRepositorio>();
             builder.Services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
+            builder.Services.AddScoped<CargoRepositorio>();
+            builder.Services.AddScoped<ColaboradorRepositorio>();
+            builder.Services.AddScoped<HoleriteRepositorio>();
+            builder.Services.AddScoped<EmpresaRepositorio>();
+            builder.Services.AddScoped<ILogin, LoginRepositorio>();
+
+
+
+
+
+
 
             var chave = Encoding.ASCII.GetBytes(Settings.Secret());
             builder.Services.AddAuthentication(x =>
