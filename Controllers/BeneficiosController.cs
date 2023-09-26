@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ApiFolhaPagamento.Models;
 using ApiFolhaPagamento.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -19,6 +20,7 @@ namespace ApiFolhaPagamento.Controllers.API
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<List<BeneficioModel>>> BuscarTodosOsBeneficios()
         {
             List<BeneficioModel> beneficios = await _beneficioRepositorio.BuscarTodosBeneficios();
@@ -26,6 +28,7 @@ namespace ApiFolhaPagamento.Controllers.API
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public ActionResult<BeneficioModel> Get(int id)
         {
             var beneficio = _beneficioRepositorio.BuscarPorId(id);
@@ -37,6 +40,7 @@ namespace ApiFolhaPagamento.Controllers.API
         }
 
         [HttpPost]
+        [Authorize(Policy = "Adm")]
         public IActionResult Post([FromBody] BeneficioModel beneficio)
         {
             try
@@ -54,6 +58,7 @@ namespace ApiFolhaPagamento.Controllers.API
             }
         }
         [HttpPut("{id}")]
+        [Authorize(Policy = "Adm")]
         public IActionResult Put(int id, [FromBody] BeneficioModel beneficioDTO)
         {
             try

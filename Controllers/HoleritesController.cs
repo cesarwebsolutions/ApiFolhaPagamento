@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using ApiFolhaPagamento.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ApiFolhaPagamento.Controllers
 {
@@ -24,6 +25,7 @@ namespace ApiFolhaPagamento.Controllers
             _dbContext = sistemaFolhaPagamentoDBContex;
         }
         [HttpPost]
+        [Authorize(Policy = "Adm")]
         public IActionResult Post([FromBody] HoleriteModel holerite)
         {
             try
@@ -104,6 +106,7 @@ namespace ApiFolhaPagamento.Controllers
 
 
         [HttpGet]
+        [Authorize(Policy = "Adm")]
         public ActionResult<List<HoleriteModel>> BuscarTodosOsHolerites()
         {
             var holerites = _holeriteRepositorio.BuscarTodosHolerites();
@@ -111,6 +114,7 @@ namespace ApiFolhaPagamento.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public ActionResult<HoleriteModel> BuscarPorId(int id)
         {
             var holerite = _holeriteRepositorio.BuscarHoleritePorId(id);
@@ -122,6 +126,7 @@ namespace ApiFolhaPagamento.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = "Adm")]
         public ActionResult<HoleriteModel> Apagar(int id)
         {
             var holerite = _holeriteRepositorio.BuscarHoleritePorId(id);

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ApiFolhaPagamento.Models;
 using ApiFolhaPagamento.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -19,6 +20,7 @@ namespace ApiFolhaPagamento.Controllers.API
         }
 
         [HttpGet]
+        [Authorize]
         public ActionResult<List<EmpresaModel>> Get()
         {
             var empresas = _empresaRepositorio.BuscarTodos();
@@ -26,6 +28,7 @@ namespace ApiFolhaPagamento.Controllers.API
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public ActionResult<EmpresaModel> Get(int id)
         {
             var empresa = _empresaRepositorio.BuscarPorId(id);
@@ -37,6 +40,7 @@ namespace ApiFolhaPagamento.Controllers.API
         }
 
         [HttpPost]
+        [Authorize(Policy = "Adm")]
         public IActionResult Post([FromBody] EmpresaModel empresa)
         {
             try
@@ -55,6 +59,7 @@ namespace ApiFolhaPagamento.Controllers.API
         }
 
         [HttpPut("{id}")]
+        [Authorize(Policy = "Adm")]
         public IActionResult Put(int id, [FromBody] EmpresaModel empresa)
         {
             try

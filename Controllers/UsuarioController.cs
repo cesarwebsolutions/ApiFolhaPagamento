@@ -1,5 +1,6 @@
 ﻿using ApiFolhaPagamento.Models;
 using ApiFolhaPagamento.Repositorios.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +18,7 @@ namespace ApiFolhaPagamento.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<List<UsuarioModel>>> BuscarTodosUsuarios()
         {
             List<UsuarioModel> usuarios = await _usuarioRepositorio.BuscarTodosUsuarios();
@@ -25,6 +27,7 @@ namespace ApiFolhaPagamento.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Policy = "Adm")]
         public async Task<ActionResult<UsuarioModel>> BuscarPorId(int id)
         {
             UsuarioModel usuarios = await _usuarioRepositorio.BuscarUsuario(id);
@@ -36,6 +39,7 @@ namespace ApiFolhaPagamento.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "Adm")]
         public async Task<ActionResult<UsuarioModel>> Cadastrar([FromBody] UsuarioModel usuarioModel)
         {
             UsuarioModel usuario = await _usuarioRepositorio.Adicionar(usuarioModel);
@@ -44,6 +48,7 @@ namespace ApiFolhaPagamento.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Policy = "Adm")]
         public async Task<ActionResult<UsuarioModel>> Atualizar([FromBody] UsuarioModel usuarioModel, int id)
         {
             usuarioModel.Id = id;
@@ -53,6 +58,7 @@ namespace ApiFolhaPagamento.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = "Adm")]
         public async Task<ActionResult<UsuarioModel>> Apagar(int id)
         {
             await _usuarioRepositorio.Apagar(id);

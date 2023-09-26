@@ -1,8 +1,11 @@
+
+using ApiFolhaPagamento.AuthorizationTeste;
 using ApiFolhaPagamento.Data;
 using ApiFolhaPagamento.Repositorios;
 using ApiFolhaPagamento.Repositorios.Interfaces;
 using ApiFolhaPagamento.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -16,11 +19,27 @@ namespace ApiFolhaPagamento
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
+            builder.Services.AddSingleton<IAuthorizationHandler, PermissaoAuthorization>();
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer("CustomJwt",options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Settings.Secret())),
+                    ValidateAudience = false,
+                    ValidateIssuer = false,
+                    ClockSkew = TimeSpan.Zero
+
+                };
+            });
 
             builder.Services.AddEntityFrameworkSqlServer()
                 .AddDbContext<SistemaFolhaPagamentoDBContex>(
@@ -34,7 +53,10 @@ namespace ApiFolhaPagamento
             builder.Services.AddScoped<HoleriteRepositorio>();
             builder.Services.AddScoped<EmpresaRepositorio>();
             builder.Services.AddScoped<ILogin, LoginRepositorio>();
-
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Adm", policy => policy.AddRequirements(new Permissao(1)));
+            });
 
 
 
