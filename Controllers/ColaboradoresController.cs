@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ApiFolhaPagamento.Models;
 using ApiFolhaPagamento.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiFolhaPagamento.Controllers.API
@@ -21,6 +22,7 @@ namespace ApiFolhaPagamento.Controllers.API
         }
 
         [HttpGet]
+        [Authorize]
         public ActionResult<List<ColaboradorModel>> Get()
         {
             var colaboradores = _colaboradorRepositorio.BuscarTodosColaboradores();
@@ -28,6 +30,7 @@ namespace ApiFolhaPagamento.Controllers.API
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public ActionResult<ColaboradorModel> Get(int id)
         {
             var colaborador = _colaboradorRepositorio.BuscarPorId(id);
@@ -39,6 +42,7 @@ namespace ApiFolhaPagamento.Controllers.API
         }
 
         [HttpPost]
+        [Authorize(Policy = "Adm")]
         public IActionResult Post([FromBody] ColaboradorModel colaborador)
         {
             try
@@ -65,6 +69,7 @@ namespace ApiFolhaPagamento.Controllers.API
         }
 
         [HttpPut("{id}")]
+        [Authorize(Policy = "Adm")]
         public IActionResult Put(int id, [FromBody] ColaboradorModel colaborador)
         {
             try

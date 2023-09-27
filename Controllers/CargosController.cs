@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ApiFolhaPagamento.Models;
 using ApiFolhaPagamento.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -19,6 +20,7 @@ namespace ApiFolhaPagamento.Controllers.API
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<List<CargoModel>>> BuscarTodosOsCargos()
         {
             List<CargoModel> cargos = await _cargoRepositorio.BuscarTodosCargos();
@@ -26,6 +28,7 @@ namespace ApiFolhaPagamento.Controllers.API
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public ActionResult<CargoModel> Get(int id)
         {
             var cargo = _cargoRepositorio.BuscarPorId(id);
@@ -37,6 +40,7 @@ namespace ApiFolhaPagamento.Controllers.API
         }
 
         [HttpPost]
+        [Authorize(Policy = "Adm")]
         public IActionResult Post([FromBody] CargoModel cargo)
         {
             try
@@ -62,6 +66,7 @@ namespace ApiFolhaPagamento.Controllers.API
             }
         }
         [HttpPut("{id}")]
+        [Authorize(Policy = "Adm")]
         public IActionResult Put(int id, [FromBody] CargoModel cargoModel)
         {
             try

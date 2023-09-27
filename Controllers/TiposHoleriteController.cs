@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ApiFolhaPagamento.Models;
 using ApiFolhaPagamento.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -19,6 +20,7 @@ namespace ApiFolhaPagamento.Controllers.API
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<List<TiposHolerite>>> BuscarTodosOsTipos()
         {
             List<TiposHolerite> tipos = await _tipoRepositorio.BuscarTodosTiposHolerite();
@@ -26,6 +28,7 @@ namespace ApiFolhaPagamento.Controllers.API
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public ActionResult<TiposHolerite> Get(int id)
         {
             var tipo = _tipoRepositorio.BuscarPorId(id);
@@ -37,6 +40,7 @@ namespace ApiFolhaPagamento.Controllers.API
         }
 
         [HttpPost]
+        [Authorize(Policy = "Adm")]
         public IActionResult Post([FromBody] TiposHolerite tipo)
         {
             try
@@ -54,6 +58,7 @@ namespace ApiFolhaPagamento.Controllers.API
             }
         }
         [HttpPut("{id}")]
+        [Authorize(Policy = "Adm")]
         public IActionResult Put(int id, [FromBody] TiposHolerite tipoDTO)
         {
             try

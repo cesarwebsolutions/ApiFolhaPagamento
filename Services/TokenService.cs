@@ -11,11 +11,12 @@ namespace ApiFolhaPagamento.Services
         public static string GenerateToken(UsuarioModel usuario)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var chave = Encoding.ASCII.GetBytes(Settings.Secret());
+            var chave = Encoding.UTF8.GetBytes(Settings.Secret());
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] {
                     new Claim(ClaimTypes.Name, usuario.Email), // Usuario.Identity.Name
+                    new Claim(ClaimTypes.Role, usuario.PermissaoId.ToString()),
                     new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString())
                 }),
                 Expires = DateTime.UtcNow.AddHours(1),

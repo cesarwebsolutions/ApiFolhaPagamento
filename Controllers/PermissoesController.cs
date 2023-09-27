@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ApiFolhaPagamento.Models;
 using ApiFolhaPagamento.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -19,6 +20,7 @@ namespace ApiFolhaPagamento.Controllers.API
         }
 
         [HttpGet]
+        [Authorize(Policy = "Adm")]
         public async Task<ActionResult<List<Permissoes>>> BuscarTodosOsPermissoess()
         {
             List<Permissoes> permissoess = await _permissoesRepositorio.BuscarTodosPermissoess();
@@ -26,6 +28,7 @@ namespace ApiFolhaPagamento.Controllers.API
         }
 
         [HttpGet("{id}")]
+        [Authorize(Policy = "Adm")]
         public ActionResult<Permissoes> Get(int id)
         {
             var permissoes = _permissoesRepositorio.BuscarPorId(id);
@@ -37,6 +40,7 @@ namespace ApiFolhaPagamento.Controllers.API
         }
 
         [HttpPost]
+        [Authorize(Policy = "Adm")]
         public IActionResult Post([FromBody] Permissoes permissoes)
         {
             try
@@ -54,6 +58,7 @@ namespace ApiFolhaPagamento.Controllers.API
             }
         }
         [HttpPut("{id}")]
+        [Authorize(Policy = "Adm")]
         public IActionResult Put(int id, [FromBody] Permissoes permissoesDTO)
         {
             try

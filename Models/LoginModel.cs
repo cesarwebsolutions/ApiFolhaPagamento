@@ -1,4 +1,4 @@
-﻿using ApiFolhaPagamento.Enums;
+﻿
 
 namespace ApiFolhaPagamento.Models
 {
