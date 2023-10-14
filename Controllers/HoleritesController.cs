@@ -120,7 +120,7 @@ namespace ApiFolhaPagamento.Controllers
             var holerite = _holeriteRepositorio.BuscarHoleritePorId(id);
             if (holerite == null)
             {
-                return NotFound("Holerite Não Encontrado");
+                return NotFound((new { message = "Holerite não encontrado" }));
             }
             return Ok(holerite);
         }
@@ -133,12 +133,39 @@ namespace ApiFolhaPagamento.Controllers
 
             if (holerite == null)
             {
-                return NotFound("Holerite Não Encontrado");
+                return NotFound((new { message = "Holerite não encontrado" }));
             }
             _holeriteRepositorio.DeletarHolerite(id);
 
-            return Ok("Holerite Deletado com Sucesso!");
+            return Ok((new { message = "Holerite Deletado com sucesso" }));
         }
+
+        [HttpGet("filtro")]
+        [Authorize(Policy = "Adm")]
+        public ActionResult<List<HoleriteModel>> FiltrarHolerites(int? ano, int? mes)
+        {
+            // Verifica se os parâmetros de ano e mês foram fornecidos na solicitação
+            if (ano == null && mes == null)
+            {
+                // Se nenhum parâmetro foi fornecido, retorna todos os holerites
+                var holerites = _holeriteRepositorio.BuscarTodosHolerites();
+                return Ok(holerites);
+            }
+            else
+            {
+                // Filtra os holerites com base nos parâmetros fornecidos
+                var holeritesFiltrados = _holeriteRepositorio
+                    .BuscarTodosHolerites()
+                    .Where(h =>
+                        (!ano.HasValue || h.Ano == ano.Value) &&
+                        (!mes.HasValue || h.Mes == mes.Value))
+                    .ToList();
+
+                return Ok(holeritesFiltrados);
+            }
+        }
+
+
         //Regra de calculo baseada na fonte https://www.contabilizei.com.br/contabilidade-online/tabela-inss/
         private double CalculaDescontoINSS(double salarioBase)
         {

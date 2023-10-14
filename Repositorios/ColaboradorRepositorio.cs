@@ -65,33 +65,60 @@ namespace ApiFolhaPagamento.Services
         public List<ColaboradorModel> BuscarColaboradoresAtivos()
         {
             return _dbContext.Colaboradores
-                .Where(c => c.Ativo == true)
-                .Join(
-                    _dbContext.Cargos,
-                    colaborador => colaborador.CargoId,
-                    cargo => cargo.Id,
-                    (colaborador, cargo) => new { Colaborador = colaborador, Cargo = cargo }
-                )
-                .Join(
-                    _dbContext.Empresas,
-                    colaboradorCargo => colaboradorCargo.Colaborador.EmpresaId,
-                    empresa => empresa.Id,
-                    (colaboradorCargo, empresa) => new ColaboradorModel
-                    {
-                        Id = colaboradorCargo.Colaborador.Id,
-                        Nome = colaboradorCargo.Colaborador.Nome,
-                        Sobrenome = colaboradorCargo.Colaborador.Sobrenome,
-                        SalarioBase = colaboradorCargo.Colaborador.SalarioBase,
-                        Dependentes = colaboradorCargo.Colaborador.Dependentes,
-                        Filhos = colaboradorCargo.Colaborador.Filhos,
-                        DataNascimento = colaboradorCargo.Colaborador.DataNascimento,
-                        DataAdmissao = colaboradorCargo.Colaborador.DataAdmissao,
-                        Cargo = colaboradorCargo.Cargo,
-                        Empresa = empresa 
-                    }
-                )
+                 .Where(c => c.Ativo == true)
+                 .Select(colaborador => new ColaboradorModel
+                 {
+                     Id = colaborador.Id,
+                     CPF = colaborador.CPF,
+                     Nome = colaborador.Nome,
+                     Sobrenome = colaborador.Sobrenome,
+                     SalarioBase = colaborador.SalarioBase,
+                     DataNascimento = colaborador.DataNascimento,
+                     DataAdmissao = colaborador.DataAdmissao,
+                     Dependentes = colaborador.Dependentes,
+                     Filhos = colaborador.Filhos,
+                     CargoId = colaborador.CargoId,
+                     EmpresaId = colaborador.EmpresaId,
+                     CEP = colaborador.CEP,
+                     Logradouro = colaborador.Logradouro,
+                     Numero = colaborador.Numero,
+                     Bairro = colaborador.Bairro,
+                     Cidade = colaborador.Cidade,
+                     Estado = colaborador.Estado,
+
+                 })
+                 .ToList();
+        }
+        public List<ColaboradorModel> BuscarColaboradoresInativos()
+        {
+            return _dbContext.Colaboradores
+                .Where(c => c.Ativo == false)
+                .Select(colaborador => new ColaboradorModel
+                {
+                    Id = colaborador.Id,
+                    CPF = colaborador.CPF,
+                    Nome = colaborador.Nome,
+                    Sobrenome = colaborador.Sobrenome,
+                    SalarioBase = colaborador.SalarioBase,
+                    DataNascimento = colaborador.DataNascimento,
+                    DataAdmissao = colaborador.DataAdmissao,
+                    DataDemissao = colaborador.DataDemissao,
+                    Dependentes = colaborador.Dependentes,
+                    Filhos = colaborador.Filhos,
+                    CargoId = colaborador.CargoId,
+                    EmpresaId = colaborador.EmpresaId, 
+                    CEP = colaborador.CEP,
+                    Logradouro = colaborador.Logradouro,
+                    Numero = colaborador.Numero,
+                    Bairro = colaborador.Bairro,
+                    Cidade = colaborador.Cidade,
+                    Estado = colaborador.Estado,
+                    Ativo = colaborador.Ativo,
+
+                })
                 .ToList();
         }
+
 
         public ColaboradorModel BuscarPorCPF(string cpf)
         {
@@ -113,6 +140,7 @@ namespace ApiFolhaPagamento.Services
                 _dbContext.SaveChanges();
             }
         }
+
         public bool HasCompanyEmpresa(int colaboradorId)
         {
             return _dbContext.Colaboradores.Any(c => c.Id == colaboradorId && c.EmpresaId != null);

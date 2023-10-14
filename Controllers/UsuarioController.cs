@@ -33,7 +33,7 @@ namespace ApiFolhaPagamento.Controllers
             UsuarioModel usuarios = await _usuarioRepositorio.BuscarUsuario(id);
             if (usuarios == null)
             {
-                return NotFound("Usuario Não Encontrado");
+                return NotFound((new { message = "Usuário não encontrado" }));
             }
             return Ok(usuarios);
         }
@@ -63,7 +63,7 @@ namespace ApiFolhaPagamento.Controllers
         {
             await _usuarioRepositorio.Apagar(id);
 
-            return Ok("Usuario Deletado com Sucesso!");
+            return Ok((new { message = "Usuário deletado com sucesso" }));
         }
     }
 }

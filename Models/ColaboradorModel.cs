@@ -15,12 +15,12 @@ namespace ApiFolhaPagamento.Models
         public string CPF { get; set; }
 
         [Required(ErrorMessage = "O campo {0} é obrigatório")]
-        [StringLength(20, MinimumLength = 3, ErrorMessage = "{0} size must be between {2} and {1} caracters")]
+        [StringLength(20, MinimumLength = 3, ErrorMessage = "{0} deve ter entre {2} e {1} caracteres")]
         public string Nome { get; set; }
 
 
         [Required(ErrorMessage = "O campo {0} é obrigatório")]
-        [StringLength(20, MinimumLength = 3, ErrorMessage = "{0} size must be between {2} and {1} caracters")]
+        [StringLength(20, MinimumLength = 3, ErrorMessage = "{0} deve ter entre {2} e {1} caracteres")]
         public string Sobrenome { get; set; }
         [JsonIgnore]
         public string? NomeCompleto => $"{Nome} {Sobrenome}";
@@ -31,7 +31,7 @@ namespace ApiFolhaPagamento.Models
 
         [Required(ErrorMessage = "O campo {0} é obrigatório")]
         [Display(Name = "Salário Base")]
-        [Range(100.0, 50000.0, ErrorMessage = "{0} must be from {1} to {2}")]
+        [Range(100.0, 50000.0, ErrorMessage = "{0} deve ter entre {2} e {1} caracteres")]
         [DisplayFormat(DataFormatString = "R$ {0:#,##0.00}")]
         public double SalarioBase { get; set; }
 
@@ -47,7 +47,6 @@ namespace ApiFolhaPagamento.Models
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime DataAdmissao { get; set; }
         [DataType(DataType.Date)]
-        [JsonIgnore]
         public DateTime? DataDemissao { get; set; }
         public int? Dependentes { get; set; }
         public int? Filhos { get; set; }
@@ -61,25 +60,23 @@ namespace ApiFolhaPagamento.Models
 
 
         [JsonIgnore]
-        public EmpresaModel Empresa;
+        public EmpresaModel? Empresa;
 
         [Required(ErrorMessage = "O campo {0} é obrigatório")]
         [ForeignKey(nameof(Empresa))]
         public int EmpresaId { get; set; }
-        [JsonIgnore]
+       
         public bool Ativo { get; set; } = true;
-        [JsonIgnore]
-        public UsuarioModel? Usuario { get; set; }
-        [JsonIgnore]
-        public string? Logradouro { get; set; }
-        [JsonIgnore]
-        public string? Bairro { get; set; }
-        [JsonIgnore]
-        public string? Numero { get; set; }
-        [JsonIgnore]
-        public string? Cidade { get; set; }
-        [JsonIgnore]
-        public string? Estado { get; set; }
+        [Required(ErrorMessage = "O campo {0} é obrigatório")]
+        public string Logradouro { get; set; }
+        [Required(ErrorMessage = "O campo {0} é obrigatório")]
+        public string Bairro { get; set; }
+        [Required(ErrorMessage = "O campo {0} é obrigatório")]
+        public string Numero { get; set; }
+        [Required(ErrorMessage = "O campo {0} é obrigatório")]
+        public string Cidade { get; set; }
+        [Required(ErrorMessage = "O campo {0} é obrigatório")]
+        public string Estado { get; set; }
 
 
         [Required(ErrorMessage = "O campo {0} é obrigatório")]
