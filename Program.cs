@@ -54,6 +54,7 @@ namespace ApiFolhaPagamento
             builder.Services.AddScoped<HoleriteRepositorio>();
             builder.Services.AddScoped<EmpresaRepositorio>();
             builder.Services.AddScoped<ILogin, LoginRepositorio>();
+            builder.Services.AddScoped<TiposHoleriteRepositorio>();
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("Adm", policy => policy.AddRequirements(new Permissao(1)));
@@ -152,6 +153,89 @@ namespace ApiFolhaPagamento
                 }
             }
 
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                try
+                {
+                    var dbContext = services.GetRequiredService<SistemaFolhaPagamentoDBContex>();
+
+                    // Verificar se o usuário 'admin' já existe no banco de dados
+                    if (!dbContext.TiposHolerite.Any(u => u.TipoHolerite == "Holerite"))
+                    {
+                        var tipoHolerite = new TiposHolerite
+                        {
+                            TipoHolerite = "Holerite",
+
+                        };
+
+                        dbContext.TiposHolerite.Add(tipoHolerite);
+                        await dbContext.SaveChangesAsync();
+                        Console.WriteLine(" Tipo 'Holerite' foi adicionado ao banco de dados.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Ocorreu um erro ao verificar/inserir o tipo de holerite: " + ex.Message);
+                }
+            }
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                try
+                {
+                    var dbContext = services.GetRequiredService<SistemaFolhaPagamentoDBContex>();
+
+                    // Verificar se o usuário 'admin' já existe no banco de dados
+                    if (!dbContext.TiposHolerite.Any(u => u.TipoHolerite == "13 Salario"))
+                    {
+                        var tipoHolerite = new TiposHolerite
+                        {
+                            TipoHolerite = "13 Salario",
+
+                        };
+
+                        dbContext.TiposHolerite.Add(tipoHolerite);
+                        await dbContext.SaveChangesAsync();
+                        Console.WriteLine(" Tipo '13 Salario' foi adicionado ao banco de dados.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Ocorreu um erro ao verificar/inserir o tipo de holerite: " + ex.Message);
+                }
+            }
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                try
+                {
+                    var dbContext = services.GetRequiredService<SistemaFolhaPagamentoDBContex>();
+
+                    // Verificar se o usuário 'admin' já existe no banco de dados
+                    if (!dbContext.Empresas.Any(u => u.NomeFantasia == "RH PROJECT"))
+                    {
+                        var empresa = new EmpresaModel
+                        {
+                            RazaoSocial = "RH PROJECT LTDA",
+                            NomeFantasia = "RH PROJECT",
+                            Cnpj = "00000000000000",
+                        };
+
+                        dbContext.Empresas.Add(empresa);
+                        await dbContext.SaveChangesAsync();
+                        Console.WriteLine("Empresa foi adicionado ao banco de dados.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Ocorreu um erro ao verificar/inserir a empresa: " + ex.Message);
+                }
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

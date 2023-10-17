@@ -22,11 +22,6 @@ namespace ApiFolhaPagamento.Models
         [Required(ErrorMessage = "O campo {0} é obrigatório")]
         [StringLength(20, MinimumLength = 3, ErrorMessage = "{0} deve ter entre {2} e {1} caracteres")]
         public string Sobrenome { get; set; }
-        [JsonIgnore]
-        public string? NomeCompleto => $"{Nome} {Sobrenome}";
-        [JsonIgnore]
-        public string? NomeCPF => $"{NomeCompleto} - CPF: {CPF}";
-
 
 
         [Required(ErrorMessage = "O campo {0} é obrigatório")]

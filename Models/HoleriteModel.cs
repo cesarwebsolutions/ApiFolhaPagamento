@@ -56,7 +56,7 @@ namespace ApiFolhaPagamento.Models
         public int? DependentesHolerite { get; set; }
 
 
-        public int? Tipo { get; set; }
+        public int Tipo { get; set; }
 
 
 
