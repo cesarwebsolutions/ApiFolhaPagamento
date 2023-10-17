@@ -43,6 +43,11 @@ namespace ApiFolhaPagamento.Repositorios
                 throw new Exception($"Usuário não encontrado!");
             }
 
+            usuarioPorId.Nome = usuario.Nome;
+            usuarioPorId.Email = usuario.Email;
+            usuarioPorId.Senha = usuario.Senha;
+            usuarioPorId.PermissaoId = usuario.PermissaoId;
+
             _dbContext.Usuarios.Update(usuarioPorId);
             await _dbContext.SaveChangesAsync();
             return usuarioPorId;
