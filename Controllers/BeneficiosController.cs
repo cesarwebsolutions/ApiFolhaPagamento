@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
-namespace ApiFolhaPagamento.Controllers.API
+namespace ApiFolhaPagamento.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -72,6 +72,7 @@ namespace ApiFolhaPagamento.Controllers.API
 
                 // Atualize os dados do beneficio com os valores do DTO
                 existingBeneficio.Descricao = beneficioDTO.Descricao;
+                existingBeneficio.Valor = beneficioDTO.Valor;
 
                 _beneficioRepositorio.Atualizar(existingBeneficio);
             }
