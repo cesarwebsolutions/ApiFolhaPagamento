@@ -198,6 +198,7 @@ namespace ApiFolhaPagamento.Controllers.API
 
                 colaborador.Ativo = true;
                 colaborador.DataDemissao = null;
+                colaborador.DataAdmissao = DateTime.Now;
 
 
                 _dbContext.SaveChanges();
