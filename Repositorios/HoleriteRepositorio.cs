@@ -23,9 +23,32 @@ namespace ApiFolhaPagamento.Services
         public List<HoleriteModel> BuscarTodosHolerites()
         {
             return _dbContext.Holerites
-                .Include(h => h.Colaborador) 
+                .Include(h => h.Colaborador)
+                .Select(holerite => new HoleriteModel
+                {
+                    Id = holerite.Id,
+                    ColaboradorId = holerite.ColaboradorId,
+                    Colaborador = new ColaboradorModel
+                    {
+                        Nome = holerite.Colaborador.Nome,
+                        Sobrenome = holerite.Colaborador.Sobrenome,
+                        CPF = holerite.Colaborador.CPF
+                    },
+                    Mes = holerite.Mes,
+                    Ano = holerite.Ano,
+                    SalarioBruto = holerite.SalarioBruto,
+                    DescontoINSS = holerite.DescontoINSS,
+                    DescontoIRRF = holerite.DescontoIRRF,
+                    HorasNormais = holerite.HorasNormais,
+                    HorasExtras = holerite.HorasExtras,
+                    SalarioLiquido = holerite.SalarioLiquido,
+                    DependentesHolerite = holerite.DependentesHolerite,
+                    Tipo = holerite.Tipo
+                })
                 .ToList();
         }
+
+
 
 
         public HoleriteModel BuscarHoleritePorId(int id)

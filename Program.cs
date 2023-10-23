@@ -1,6 +1,7 @@
 
 using ApiFolhaPagamento.AuthorizationTeste;
 using ApiFolhaPagamento.Data;
+using ApiFolhaPagamento.Models;
 using ApiFolhaPagamento.Repositorios;
 using ApiFolhaPagamento.Repositorios.Interfaces;
 using ApiFolhaPagamento.Services;
@@ -14,7 +15,7 @@ namespace ApiFolhaPagamento
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -54,14 +55,11 @@ namespace ApiFolhaPagamento
             builder.Services.AddScoped<EmpresaRepositorio>();
             builder.Services.AddScoped<BeneficioRepositorio>();
             builder.Services.AddScoped<ILogin, LoginRepositorio>();
+            builder.Services.AddScoped<TiposHoleriteRepositorio>();
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("Adm", policy => policy.AddRequirements(new Permissao(1)));
             });
-
-
-
-
 
 
             var chave = Encoding.ASCII.GetBytes(Settings.Secret());
@@ -82,6 +80,163 @@ namespace ApiFolhaPagamento
             });
 
             var app = builder.Build();
+
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                try
+                {
+                    var dbContext = services.GetRequiredService<SistemaFolhaPagamentoDBContex>();
+
+                    // Verificar se o usuário 'admin' já existe no banco de dados
+                    if (!dbContext.Usuarios.Any(u => u.Nome == "admin"))
+                    {
+                        // Se não existir, crie o usuário 'admin'
+                        var adminUsuario = new UsuarioModel
+                        {
+                            Nome = "admin",
+                            Email = "admin",
+                            Senha = "admin",
+                            PermissaoId = 1
+                        };
+
+                        dbContext.Usuarios.Add(adminUsuario);
+                        await dbContext.SaveChangesAsync();
+                        Console.WriteLine("Usuário 'admin' foi adicionado ao banco de dados.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Ocorreu um erro ao verificar/inserir o usuário 'admin': " + ex.Message);
+                }
+            }
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                try
+                {
+                    var dbContext = services.GetRequiredService<SistemaFolhaPagamentoDBContex>();
+
+                    // Verificar se a permissão 'ADMIN' já existe no banco de dados
+                    if (!dbContext.Permissoes.Any(p => p.Permissao == "ADMIN"))
+                    {
+                        // Se não existir, crie a permissão 'ADMIN'
+                        var permissaoAdmin = new Permissoes
+                        {
+                            Permissao = "ADMIN"
+                        };
+
+                        dbContext.Permissoes.Add(permissaoAdmin);
+                    }
+
+                    // Verificar se a permissão 'USER' já existe no banco de dados
+                    if (!dbContext.Permissoes.Any(p => p.Permissao == "USER"))
+                    {
+                        // Se não existir, crie a permissão 'USER'
+                        var permissaoUser = new Permissoes
+                        {
+                            Permissao = "USER"
+                        };
+
+                        dbContext.Permissoes.Add(permissaoUser);
+                    }
+
+                    await dbContext.SaveChangesAsync();
+                    Console.WriteLine("Permissões 'ADMIN' e 'USER' foram adicionadas ao banco de dados.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Ocorreu um erro ao verificar/inserir as permissões: " + ex.Message);
+                }
+            }
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                try
+                {
+                    var dbContext = services.GetRequiredService<SistemaFolhaPagamentoDBContex>();
+
+                    // Verificar se o usuário 'admin' já existe no banco de dados
+                    if (!dbContext.TiposHolerite.Any(u => u.TipoHolerite == "Holerite"))
+                    {
+                        var tipoHolerite = new TiposHolerite
+                        {
+                            TipoHolerite = "Holerite",
+
+                        };
+
+                        dbContext.TiposHolerite.Add(tipoHolerite);
+                        await dbContext.SaveChangesAsync();
+                        Console.WriteLine(" Tipo 'Holerite' foi adicionado ao banco de dados.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Ocorreu um erro ao verificar/inserir o tipo de holerite: " + ex.Message);
+                }
+            }
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                try
+                {
+                    var dbContext = services.GetRequiredService<SistemaFolhaPagamentoDBContex>();
+
+                    // Verificar se o usuário 'admin' já existe no banco de dados
+                    if (!dbContext.TiposHolerite.Any(u => u.TipoHolerite == "13 Salario"))
+                    {
+                        var tipoHolerite = new TiposHolerite
+                        {
+                            TipoHolerite = "13 Salario",
+
+                        };
+
+                        dbContext.TiposHolerite.Add(tipoHolerite);
+                        await dbContext.SaveChangesAsync();
+                        Console.WriteLine(" Tipo '13 Salario' foi adicionado ao banco de dados.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Ocorreu um erro ao verificar/inserir o tipo de holerite: " + ex.Message);
+                }
+            }
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                try
+                {
+                    var dbContext = services.GetRequiredService<SistemaFolhaPagamentoDBContex>();
+
+                    // Verificar se o usuário 'admin' já existe no banco de dados
+                    if (!dbContext.Empresas.Any(u => u.NomeFantasia == "RH PROJECT"))
+                    {
+                        var empresa = new EmpresaModel
+                        {
+                            RazaoSocial = "RH PROJECT LTDA",
+                            NomeFantasia = "RH PROJECT",
+                            Cnpj = "00000000000000",
+                        };
+
+                        dbContext.Empresas.Add(empresa);
+                        await dbContext.SaveChangesAsync();
+                        Console.WriteLine("Empresa foi adicionado ao banco de dados.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Ocorreu um erro ao verificar/inserir a empresa: " + ex.Message);
+                }
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

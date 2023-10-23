@@ -49,7 +49,7 @@ namespace ApiFolhaPagamento.Controllers.API
 
                 if (existingCargo != null)
                 {
-                    return BadRequest("Já existe um cargo cadastrado com o mesmo Nome.");
+                    return BadRequest(new { message = "Já existe um Cargo com mesmo Nome"});
                 }
 
 
@@ -78,7 +78,6 @@ namespace ApiFolhaPagamento.Controllers.API
                     return NotFound();
                 }
 
-                // Atualize os dados do cargo com os valores do DTO
                 existingCargo.Nome = cargoModel.Nome;
 
                 _cargoRepositorio.Atualizar(existingCargo);
@@ -90,6 +89,35 @@ namespace ApiFolhaPagamento.Controllers.API
 
             return Ok(cargoModel);
         }
+
+        [HttpDelete("{id}")]
+        [Authorize(Policy = "Adm")]
+        public IActionResult Delete(int id)
+        {
+            try
+            {
+                if (_cargoRepositorio.TemColaboradoresVinculados(id))
+                {
+                    return BadRequest(new { message = "Não foi possível excluir o Cargo, pois há colaboradores vinculados" });
+                }
+
+                _cargoRepositorio.ExcluirCargo(id);
+                return Ok(new { message = "Cargo excluído com sucesso" });
+            }
+            catch (ArgumentException e)
+            {
+                return NotFound(new { message = e.Message });
+            }
+            catch (InvalidOperationException e)
+            {
+                return BadRequest(new { message = e.Message });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, new { message = e.Message });
+            }
+        }
+
 
 
     }

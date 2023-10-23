@@ -53,6 +53,27 @@ namespace ApiFolhaPagamento.Services
             return cargo;
         }
 
+        public void ExcluirCargo(int cargoId)
+        {
+            var cargo = _dbContext.Cargos.Find(cargoId);
+
+            if (cargo == null)
+            {
+                throw new ArgumentException("Cargo não encontrado");
+            }
+
+            _dbContext.Cargos.Remove(cargo);
+            _dbContext.SaveChanges();
+        }
+
+        public bool TemColaboradoresVinculados(int cargoId)
+        {
+            return _dbContext.Colaboradores.Any(c => c.CargoId == cargoId);
+        }
+
+
+
+
 
     }
 }

@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using ApiFolhaPagamento.Data;
 using ApiFolhaPagamento.Models;
 using ApiFolhaPagamento.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiFolhaPagamento.Controllers.API
 {
@@ -13,12 +15,14 @@ namespace ApiFolhaPagamento.Controllers.API
         private readonly ColaboradorRepositorio _colaboradorRepositorio;
         private readonly CargoRepositorio _cargoRepositorio;
         private readonly EmpresaRepositorio _empresaRepositorio;
+        private readonly SistemaFolhaPagamentoDBContex _dbContext;
 
-        public ColaboradoresController(ColaboradorRepositorio colaboradorRepositorio, CargoRepositorio cargoRepositorio, EmpresaRepositorio empresaRepositorio)
+        public ColaboradoresController(SistemaFolhaPagamentoDBContex dbContext, ColaboradorRepositorio colaboradorRepositorio, CargoRepositorio cargoRepositorio, EmpresaRepositorio empresaRepositorio)
         {
             _colaboradorRepositorio = colaboradorRepositorio;
             _cargoRepositorio = cargoRepositorio;
             _empresaRepositorio = empresaRepositorio;
+            _dbContext = dbContext;
         }
 
         [HttpGet]
@@ -51,7 +55,7 @@ namespace ApiFolhaPagamento.Controllers.API
 
                 if (existingColaborador != null)
                 {
-                    return BadRequest("Já existe um colaborador cadastrado com o mesmo CPF.");
+                    return BadRequest((new { message = "Já existe um Colaborador com mesmo CPF" }));
                 }
 
                 _colaboradorRepositorio.Adicionar(colaborador);
@@ -68,7 +72,7 @@ namespace ApiFolhaPagamento.Controllers.API
             }
         }
 
-        [HttpPut("{id}")]
+        [HttpPatch("{id}")]
         [Authorize(Policy = "Adm")]
         public IActionResult Put(int id, [FromBody] ColaboradorModel colaborador)
         {
@@ -92,6 +96,16 @@ namespace ApiFolhaPagamento.Controllers.API
                 existingColaborador.CargoId = colaborador.CargoId;
                 existingColaborador.EmpresaId = colaborador.EmpresaId;
                 existingColaborador.CEP = colaborador.CEP;
+                existingColaborador.Logradouro = colaborador.Logradouro;
+                existingColaborador.Numero = colaborador.Numero;
+                existingColaborador.Bairro = colaborador.Bairro;
+                existingColaborador.Cidade = colaborador.Cidade;
+                existingColaborador.Estado = colaborador.Estado;
+
+
+
+
+
 
                 _colaboradorRepositorio.Atualizar(existingColaborador);
             }
@@ -103,7 +117,99 @@ namespace ApiFolhaPagamento.Controllers.API
             return Ok(colaborador);
         }
 
+        [HttpPut("demitir/{id}")]
+        [Authorize(Policy = "Adm")]
+        public IActionResult DemitirColaborador(int id)
+        {
+            try
+            {
+                var colaborador = _dbContext.Colaboradores.FirstOrDefault(c => c.Id == id);
 
+                if (colaborador == null)
+                {
+                    return NotFound((new { message = "Colaborador não encontrado" }));
+                }
+
+                if (!colaborador.Ativo)
+                {
+                    return BadRequest((new { message = "Este colaborador já está inativo" }));
+                }
+
+                colaborador.DataDemissao = DateTime.Now;
+                colaborador.Ativo = false;
+
+                _dbContext.SaveChanges();
+
+                return Ok((new { message = "Colaborador demitido com sucesso" }));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("ativos")]
+        [Authorize]
+        public ActionResult<List<ColaboradorModel>> GetColaboradoresAtivos()
+        {
+            try
+            {
+                var colaboradoresAtivos = _colaboradorRepositorio.BuscarColaboradoresAtivos();
+                return Ok(colaboradoresAtivos);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("inativos")]
+        [Authorize]
+        public ActionResult<List<ColaboradorModel>> GetColaboradoreInativos()
+        {
+            try
+            {
+                var colaboradoresAtivos = _colaboradorRepositorio.BuscarColaboradoresInativos();
+                return Ok(colaboradoresAtivos);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("reativar/{id}")]
+        [Authorize(Policy = "Adm")]
+        public IActionResult ReativarColaborador(int id)
+        {
+            try
+            {
+                var colaborador = _dbContext.Colaboradores.FirstOrDefault(c => c.Id == id);
+
+                if (colaborador == null)
+                {
+                    return NotFound((new { message = "Colaborador não encontrado" }));
+                }
+
+                if (colaborador.Ativo)
+                {
+                    return BadRequest((new { message = "Este colaborador já está ativo" }));
+                }
+
+                colaborador.Ativo = true;
+                colaborador.DataDemissao = null;
+                colaborador.DataAdmissao = DateTime.Now;
+
+
+                _dbContext.SaveChanges();
+
+                return Ok((new { message = "Colaborador reativado com sucesso" }));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
     }
 }
