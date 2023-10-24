@@ -164,6 +164,23 @@ namespace ApiFolhaPagamento.Controllers
                 return Ok(holeritesFiltrados);
             }
         }
+        [HttpGet("colaborador/{colaboradorId}")]
+        [Authorize]
+        public ActionResult<List<HoleriteModel>> BuscarHoleritesPorColaborador(int colaboradorId)
+        {
+            var holerites = _holeriteRepositorio
+                .BuscarTodosHolerites()
+                .Where(h => h.ColaboradorId == colaboradorId)
+                .ToList();
+
+            if (holerites.Count == 0)
+            {
+                return NotFound(new { message = "Nenhum Holerite encontrado para o Colaborador com ID " + colaboradorId });
+            }
+
+            return Ok(holerites);
+        }
+
 
 
         //Regra de calculo baseada na fonte https://www.contabilizei.com.br/contabilidade-online/tabela-inss/
