@@ -68,7 +68,7 @@ namespace ApiFolhaPagamento.Controllers.API
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(ex);
             }
         }
 
@@ -101,6 +101,7 @@ namespace ApiFolhaPagamento.Controllers.API
                 existingColaborador.Bairro = colaborador.Bairro;
                 existingColaborador.Cidade = colaborador.Cidade;
                 existingColaborador.Estado = colaborador.Estado;
+                existingColaborador.Email = colaborador.Email;
 
 
 

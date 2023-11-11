@@ -7,6 +7,12 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using ApiFolhaPagamento.Services;
 using Microsoft.AspNetCore.Authorization;
+using iTextSharp.text.pdf;
+using iTextSharp.text;
+using IronPdf;
+using System.Net.Mail;
+using System.Net;
+using System.Net.Mime;
 
 namespace ApiFolhaPagamento.Controllers
 {
@@ -25,7 +31,7 @@ namespace ApiFolhaPagamento.Controllers
             _dbContext = sistemaFolhaPagamentoDBContex;
         }
         [HttpPost]
-        [Authorize(Policy = "Adm")]
+        //[Authorize(Policy = "Adm")]
         public IActionResult Post([FromBody] HoleriteModel holerite)
         {
             try
@@ -90,6 +96,11 @@ namespace ApiFolhaPagamento.Controllers
 
                 _holeriteRepositorio.AdicionarHolerite(holerite);
 
+                HoleriteModel teste = _holeriteRepositorio.BuscarHoleritePorId(holerite.Id);
+
+                GerarPdf(holerite);
+                //EnviarEmail();
+
                 return CreatedAtAction(nameof(BuscarPorId), new { id = holerite.Id }, holerite);
             }
             catch (FileNotFoundException ex)
@@ -106,7 +117,7 @@ namespace ApiFolhaPagamento.Controllers
 
 
         [HttpGet]
-        [Authorize(Policy = "Adm")]
+        //[Authorize(Policy = "Adm")]
         public ActionResult<List<HoleriteModel>> BuscarTodosOsHolerites()
         {
             var holerites = _holeriteRepositorio.BuscarTodosHolerites();
@@ -225,5 +236,69 @@ namespace ApiFolhaPagamento.Controllers
             return descontoIRRF;
         }
 
+        public void GerarPdf(HoleriteModel holerite)
+        {
+            //Document doc = new Document(PageSize.A4);
+            //doc.SetMargins(40, 40, 40, 80);
+            //doc.AddCreationDate();
+            //string caminho = AppDomain.CurrentDomain.BaseDirectory + @"\pdf\" + "relatorio.pdf";
+
+            //PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream(caminho, FileMode.Create));
+
+            //doc.Open();
+
+            //Paragraph titulo = new Paragraph();
+            //titulo.Font = new Font(Font.FontFamily.COURIER, 40);
+            //titulo.Alignment = Element.ALIGN_CENTER;
+            //titulo.Add("Teste \n");
+            //doc.Add(titulo);
+
+            //doc.Close();
+            var renderer = new ChromePdfRenderer(); // Instantiates Chrome Renderer
+
+            // To include elements that are usually removed to save ink during printing we choose screen
+            renderer.RenderingOptions.CssMediaType = IronPdf.Rendering.PdfCssMediaType.Screen;
+
+            var pdf = renderer.RenderUrlAsPdf("https://ironpdf.com/");
+            pdf.SaveAs(holerite.Id.ToString() + ".pdf");
+            EnviarEmail(holerite);
+
+        }
+
+        public void EnviarEmail(HoleriteModel holerite)
+        {
+            var colaborador = _colaboradorRepositorio.BuscarPorId(holerite.ColaboradorId);
+
+            var emailMessage = new MailMessage();
+            emailMessage.Subject = "Holerite";
+            emailMessage.From = new MailAddress("rhprojectr@gmail.com");
+            emailMessage.To.Add(colaborador.Email);
+            emailMessage.IsBodyHtml = true;
+
+            //emailMessage.Body = "<h1>Teste</h1>";
+
+            var attachmentPath = holerite.Id.ToString() + ".pdf"; // Substitua pelo caminho do seu arquivo PDF
+            //var attachmentPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "url_saved.pdf");
+
+            Attachment attachment = new Attachment(attachmentPath, MediaTypeNames.Application.Pdf);
+            emailMessage.Attachments.Add(attachment);
+
+            var client = new SmtpClient("smtp.gmail.com", 587);
+
+            client.Credentials = new NetworkCredential("rhprojectr@gmail.com", "jdsn ctkq kasc reew");
+            client.EnableSsl = true;
+
+            try
+            {
+                client.Send(emailMessage);
+                Console.WriteLine("banana");
+            } catch (Exception ex)
+            {
+                Console.Write(ex.ToString());
+            }
+
+        }
+
     }
+
 }

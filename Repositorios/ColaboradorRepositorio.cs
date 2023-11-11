@@ -85,6 +85,7 @@ namespace ApiFolhaPagamento.Services
                      Bairro = colaborador.Bairro,
                      Cidade = colaborador.Cidade,
                      Estado = colaborador.Estado,
+                     Email = colaborador.Email
 
                  })
                  .ToList();
@@ -114,6 +115,7 @@ namespace ApiFolhaPagamento.Services
                     Cidade = colaborador.Cidade,
                     Estado = colaborador.Estado,
                     Ativo = colaborador.Ativo,
+                    Email = colaborador.Email
 
                 })
                 .ToList();
