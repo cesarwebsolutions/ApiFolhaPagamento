@@ -72,6 +72,7 @@ namespace ApiFolhaPagamento.Services
                      CPF = colaborador.CPF,
                      Nome = colaborador.Nome,
                      Sobrenome = colaborador.Sobrenome,
+                     Email = colaborador.Email,
                      SalarioBase = colaborador.SalarioBase,
                      DataNascimento = colaborador.DataNascimento,
                      DataAdmissao = colaborador.DataAdmissao,
@@ -85,7 +86,6 @@ namespace ApiFolhaPagamento.Services
                      Bairro = colaborador.Bairro,
                      Cidade = colaborador.Cidade,
                      Estado = colaborador.Estado,
-                     Email = colaborador.Email
 
                  })
                  .ToList();
@@ -124,8 +124,16 @@ namespace ApiFolhaPagamento.Services
 
         public ColaboradorModel BuscarPorCPF(string cpf)
         {
-        
+
             var colaborador = _dbContext.Colaboradores.FirstOrDefault(c => c.CPF == cpf);
+
+            return colaborador;
+        }
+
+        public ColaboradorModel BuscarPorEmail(string email)
+        {
+
+            var colaborador = _dbContext.Colaboradores.FirstOrDefault(c => c.Email == email);
 
             return colaborador;
         }
