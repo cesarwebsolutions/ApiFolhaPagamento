@@ -57,6 +57,12 @@ namespace ApiFolhaPagamento.Controllers.API
                 {
                     return BadRequest((new { message = "Já existe um Colaborador com mesmo CPF" }));
                 }
+                var existingemail = _colaboradorRepositorio.BuscarPorEmail(colaborador.CPF);
+
+                if (existingemail != null)
+                {
+                    return BadRequest((new { message = "Já existe um Colaborador com mesmo Email" }));
+                }
 
                 _colaboradorRepositorio.Adicionar(colaborador);
 
@@ -68,11 +74,11 @@ namespace ApiFolhaPagamento.Controllers.API
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(ex);
             }
         }
 
-        [HttpPatch("{id}")]
+        [HttpPut("{id}")]
         [Authorize(Policy = "Adm")]
         public IActionResult Put(int id, [FromBody] ColaboradorModel colaborador)
         {
@@ -101,6 +107,7 @@ namespace ApiFolhaPagamento.Controllers.API
                 existingColaborador.Bairro = colaborador.Bairro;
                 existingColaborador.Cidade = colaborador.Cidade;
                 existingColaborador.Estado = colaborador.Estado;
+                existingColaborador.Email = colaborador.Email;
 
 
 

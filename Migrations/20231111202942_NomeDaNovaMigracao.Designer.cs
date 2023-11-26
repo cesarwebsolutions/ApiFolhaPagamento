@@ -4,6 +4,7 @@ using ApiFolhaPagamento.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiFolhaPagamento.Migrations
 {
     [DbContext(typeof(SistemaFolhaPagamentoDBContex))]
-    partial class SistemaFolhaPagamentoDBContexModelSnapshot : ModelSnapshot
+    [Migration("20231111202942_NomeDaNovaMigracao")]
+    partial class NomeDaNovaMigracao
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -147,8 +149,8 @@ namespace ApiFolhaPagamento.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<int>("EmpresaId")
                         .HasColumnType("int");
@@ -280,12 +282,6 @@ namespace ApiFolhaPagamento.Migrations
 
                     b.Property<int>("Tipo")
                         .HasColumnType("int");
-
-                    b.Property<double?>("ValorHorasExtras")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("ValorHorasNormais")
-                        .HasColumnType("float");
 
                     b.HasKey("Id");
 

@@ -23,6 +23,10 @@ namespace ApiFolhaPagamento.Models
         [StringLength(20, MinimumLength = 3, ErrorMessage = "{0} deve ter entre {2} e {1} caracteres")]
         public string Sobrenome { get; set; }
 
+        [Required(ErrorMessage = "O campo {0} é obrigatório")]
+        [StringLength(50, MinimumLength = 3, ErrorMessage = "{0} deve ter entre {2} e {1} caracteres")]
+        public string Email { get; set; }
+
 
         [Required(ErrorMessage = "O campo {0} é obrigatório")]
         [Display(Name = "Salário Base")]
@@ -49,8 +53,8 @@ namespace ApiFolhaPagamento.Models
         [JsonIgnore]
         public CargoModel? Cargo { get; set; }
 
-        [Required(ErrorMessage = "O campo {0} é obrigatório")]
-        [ForeignKey(nameof(Cargo))]
+                [Required(ErrorMessage = "O campo {0} é obrigatório")]
+[ForeignKey(nameof(Cargo))]
         public int CargoId { get; set; }
 
 
@@ -84,7 +88,7 @@ namespace ApiFolhaPagamento.Models
 
         }
 
-        public ColaboradorModel(int id, string nome, string sobrenome, double salarioBase, DateTime dataNascimento, DateTime dataAdmissao, int dependentes, int filhos, CargoModel cargo, EmpresaModel empresa)
+        public ColaboradorModel(int id, string nome, string sobrenome, double salarioBase, DateTime dataNascimento, DateTime dataAdmissao, int dependentes, int filhos, CargoModel cargo, EmpresaModel empresa, string email)
         {
             Id = id;
             Nome = nome;
@@ -96,6 +100,7 @@ namespace ApiFolhaPagamento.Models
             Filhos = filhos;
             Cargo = cargo;
             Empresa = empresa;
+            Email = email;
         }
     }
 }

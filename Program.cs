@@ -18,6 +18,7 @@ namespace ApiFolhaPagamento
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
             // Add services to the container.
             builder.Services.AddSingleton<IAuthorizationHandler, PermissaoAuthorization>();
@@ -59,6 +60,15 @@ namespace ApiFolhaPagamento
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("Adm", policy => policy.AddRequirements(new Permissao(1)));
+            });
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  policy =>
+                                  {
+                                      policy.AllowAnyHeader() // Isso permite qualquer header na requisição
+                              .AllowAnyMethod();
+                                  });
             });
 
 
@@ -245,6 +255,7 @@ namespace ApiFolhaPagamento
                 app.UseSwaggerUI();
             }
 
+            app.UseCors(MyAllowSpecificOrigins);
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
