@@ -41,7 +41,6 @@ namespace ApiFolhaPagamento.Controllers
         //[Authorize(Policy = "Adm")]
         public IActionResult Post([FromBody] HoleriteModel holerite)
         {
-            Console.WriteLine("banana");
             try
             {
                 var colaborador = _dbContext.Colaboradores.FirstOrDefault(c => c.Id == holerite.ColaboradorId);
@@ -75,8 +74,8 @@ namespace ApiFolhaPagamento.Controllers
                     // Define a taxa de adicional para horas extras (50% é comum, mas pode variar)
                     double taxaAdicional = 0.5; // 50% de adicional
 
-                    double valorHoraExtra = salarioBase / 220.0 * taxaAdicional;
-                    holerite.ValorHorasExtras = valorHoraExtra;
+                    double valorHoraExtra = salarioBase / 220 * taxaAdicional;
+                    holerite.ValorHorasExtras = Math.Round(holerite.HorasExtras.Value * valorHoraExtra, 2);
                     double salarioBruto = salarioBase + (holerite.HorasExtras.Value * valorHoraExtra);
 
                     holerite.SalarioBruto = Math.Round(salarioBruto, 2);
@@ -87,6 +86,7 @@ namespace ApiFolhaPagamento.Controllers
                     double percentualSalarioBase = holerite.HorasNormais.Value / 220.0; // 220 é a carga horária padrão
                     salarioBase = Math.Round(colaborador.SalarioBase * percentualSalarioBase, 2);
                     holerite.SalarioBruto = salarioBase;
+                    holerite.ValorHorasNormais = salarioBase;
                 }
 
                 // Calcula o desconto INSS e obtém o percentual
@@ -115,7 +115,7 @@ namespace ApiFolhaPagamento.Controllers
 
                 renderer.RenderingOptions.CssMediaType = IronPdf.Rendering.PdfCssMediaType.Screen;
 
-                var pdf = renderer.RenderUrlAsPdf("https://ironpdf.com/");
+                var pdf = renderer.RenderUrlAsPdf("http://localhost:4200/holerite/" + holerite.Id);
                 pdf.SaveAs(holerite.Id.ToString() + ".pdf");
 
                 var emailMessage = new MailMessage();
