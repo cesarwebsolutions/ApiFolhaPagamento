@@ -1,5 +1,7 @@
 ﻿using ApiFolhaPagamento.Models;
+using ApiFolhaPagamento.Repositorios;
 using ApiFolhaPagamento.Repositorios.Interfaces;
+using ApiFolhaPagamento.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,9 +12,9 @@ namespace ApiFolhaPagamento.Controllers
     [ApiController]
     public class UsuarioController : ControllerBase
     {
-        private readonly IUsuarioRepositorio _usuarioRepositorio;
+        private readonly UsuarioRepositorio _usuarioRepositorio;
 
-        public UsuarioController(IUsuarioRepositorio usuarioRepositorio)
+        public UsuarioController(UsuarioRepositorio usuarioRepositorio)
         {
             _usuarioRepositorio = usuarioRepositorio;
         }
@@ -42,9 +44,26 @@ namespace ApiFolhaPagamento.Controllers
         [Authorize(Policy = "Adm")]
         public async Task<ActionResult<UsuarioModel>> Cadastrar([FromBody] UsuarioModel usuarioModel)
         {
-            UsuarioModel usuario = await _usuarioRepositorio.Adicionar(usuarioModel);
+            try
+            {
+                var existingemail = _usuarioRepositorio.BuscarPorEmail(usuarioModel.Email);
 
-            return Ok(usuario);
+                if (existingemail != null)
+                {
+                    return BadRequest((new { message = "Já existe um Usuário com mesmo Email" }));
+                }
+                UsuarioModel usuario = await _usuarioRepositorio.Adicionar(usuarioModel);
+
+                return Ok(usuario);
+            }
+            catch (FileNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
 
         [HttpPut("{id}")]

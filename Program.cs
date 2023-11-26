@@ -49,7 +49,7 @@ namespace ApiFolhaPagamento
                 );
 
             builder.Services.AddScoped<ILogin, LoginRepositorio>();
-            builder.Services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
+            builder.Services.AddScoped<UsuarioRepositorio>();
             builder.Services.AddScoped<CargoRepositorio>();
             builder.Services.AddScoped<ColaboradorRepositorio>();
             builder.Services.AddScoped<HoleriteRepositorio>();

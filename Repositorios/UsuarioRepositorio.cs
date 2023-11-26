@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ApiFolhaPagamento.Repositorios
 {
-    public class UsuarioRepositorio : IUsuarioRepositorio
+    public class UsuarioRepositorio 
     {
         private readonly SistemaFolhaPagamentoDBContex _dbContext;
-        public UsuarioRepositorio(SistemaFolhaPagamentoDBContex sistemaFolhaPagamentoDBContex) 
+        public UsuarioRepositorio(SistemaFolhaPagamentoDBContex sistemaFolhaPagamentoDBContex)
         {
             _dbContext = sistemaFolhaPagamentoDBContex;
         }
@@ -38,7 +38,7 @@ namespace ApiFolhaPagamento.Repositorios
         {
             UsuarioModel usuarioPorId = await BuscarUsuario(id);
 
-            if(usuarioPorId == null)
+            if (usuarioPorId == null)
             {
                 throw new Exception($"Usuário não encontrado!");
             }
@@ -61,6 +61,14 @@ namespace ApiFolhaPagamento.Repositorios
         public async Task<UsuarioModel> BuscarUsuario(int id)
         {
             return await _dbContext.Usuarios.FirstOrDefaultAsync(usuario => usuario.Id == id);
+        }
+
+        public UsuarioModel BuscarPorEmail(string email)
+        {
+
+            var usuario = _dbContext.Usuarios.FirstOrDefault(c => c.Email == email);
+
+            return usuario;
         }
     }
 }
