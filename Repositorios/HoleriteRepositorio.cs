@@ -106,6 +106,8 @@ namespace ApiFolhaPagamento.Services
                     SalarioLiquido = holerite.SalarioLiquido,
                     DependentesHolerite = holerite.DependentesHolerite,
                     Tipo = holerite.Tipo,
+                    ValorHorasExtras = holerite.ValorHorasExtras,
+                    ValorHorasNormais = holerite.ValorHorasNormais
                 })
                 .ToList();
         }

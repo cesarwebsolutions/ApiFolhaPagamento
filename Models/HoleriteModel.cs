@@ -57,8 +57,9 @@ namespace ApiFolhaPagamento.Models
 
 
         public int Tipo { get; set; }
-
-        public double? ValorHorasNormais { get; set; } 
+        [DisplayFormat(DataFormatString = "R$ {0:#,##0.00}")]
+        public double? ValorHorasNormais { get; set; }
+        [DisplayFormat(DataFormatString = "R$ {0:#,##0.00}")]
         public double? ValorHorasExtras { get; set; }
 
         public double? PercentualINSS { get; set; }
