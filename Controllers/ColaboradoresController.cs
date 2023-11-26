@@ -78,7 +78,7 @@ namespace ApiFolhaPagamento.Controllers.API
             }
         }
 
-        [HttpPatch("{id}")]
+        [HttpPut("{id}")]
         [Authorize(Policy = "Adm")]
         public IActionResult Put(int id, [FromBody] ColaboradorModel colaborador)
         {

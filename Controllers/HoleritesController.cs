@@ -22,18 +22,25 @@ namespace ApiFolhaPagamento.Controllers
     {
         private readonly HoleriteRepositorio _holeriteRepositorio;
         private readonly ColaboradorRepositorio _colaboradorRepositorio;
+        private readonly CargoRepositorio _cargoRepositorio;
+        private readonly TiposHoleriteRepositorio _tipoHoleriteRepositorio;
+        private readonly EmpresaRepositorio _empresaRepositorio;
         private readonly SistemaFolhaPagamentoDBContex _dbContext;
 
-        public HoleritesController(HoleriteRepositorio holeriteRepositorio, ColaboradorRepositorio colaboradorRepositorio, SistemaFolhaPagamentoDBContex sistemaFolhaPagamentoDBContex)
+        public HoleritesController(HoleriteRepositorio holeriteRepositorio, ColaboradorRepositorio colaboradorRepositorio, SistemaFolhaPagamentoDBContex sistemaFolhaPagamentoDBContex, CargoRepositorio cargoRepositorio, TiposHoleriteRepositorio tiposHolerite, EmpresaRepositorio empresa)
         {
             _holeriteRepositorio = holeriteRepositorio;
             _colaboradorRepositorio = colaboradorRepositorio;
             _dbContext = sistemaFolhaPagamentoDBContex;
+            _cargoRepositorio = cargoRepositorio;
+            _tipoHoleriteRepositorio = tiposHolerite;
+            _empresaRepositorio = empresa;
         }
         [HttpPost]
         //[Authorize(Policy = "Adm")]
         public IActionResult Post([FromBody] HoleriteModel holerite)
         {
+            Console.WriteLine("banana");
             try
             {
                 var colaborador = _dbContext.Colaboradores.FirstOrDefault(c => c.Id == holerite.ColaboradorId);
@@ -62,11 +69,13 @@ namespace ApiFolhaPagamento.Controllers
                     // Calcula o Salário Bruto baseado nas horas trabalhadas e nas horas extras
                     double percentualSalarioBase = (holerite.HorasNormais.Value / 220); // 220 é a carga horária padrão
                     salarioBase = Math.Round(colaborador.SalarioBase * percentualSalarioBase, 2);
+                    holerite.ValorHorasNormais = salarioBase;
 
                     // Define a taxa de adicional para horas extras (50% é comum, mas pode variar)
                     double taxaAdicional = 0.5; // 50% de adicional
 
                     double valorHoraExtra = salarioBase / 220 * taxaAdicional;
+                    holerite.ValorHorasExtras = valorHoraExtra;
                     double salarioBruto = salarioBase + (holerite.HorasExtras.Value * valorHoraExtra);
 
                     holerite.SalarioBruto = Math.Round(salarioBruto, 2);
@@ -98,17 +107,51 @@ namespace ApiFolhaPagamento.Controllers
 
                 HoleriteModel teste = _holeriteRepositorio.BuscarHoleritePorId(holerite.Id);
 
-                GerarPdf(holerite);
-                //EnviarEmail();
+                var renderer = new ChromePdfRenderer();
+
+                renderer.RenderingOptions.CssMediaType = IronPdf.Rendering.PdfCssMediaType.Screen;
+
+                var pdf = renderer.RenderUrlAsPdf("https://ironpdf.com/");
+                pdf.SaveAs(holerite.Id.ToString() + ".pdf");
+
+                var emailMessage = new MailMessage();
+                emailMessage.Subject = "Holerite";
+                emailMessage.From = new MailAddress("rhprojectr@gmail.com");
+                emailMessage.To.Add(colaborador.Email);
+                emailMessage.IsBodyHtml = true;
+
+                emailMessage.Body = "<h1>Teste</h1>";
+
+                var attachmentPath = holerite.Id.ToString() + ".pdf";
+
+                Attachment attachment = new Attachment(attachmentPath, MediaTypeNames.Application.Pdf);
+                emailMessage.Attachments.Add(attachment);
+
+                var client = new SmtpClient("smtp.gmail.com", 587);
+
+                client.Credentials = new NetworkCredential("rhprojectr@gmail.com", "jdsn ctkq kasc reew");
+                client.EnableSsl = true;
+
+                try
+                {
+                    client.Send(emailMessage);
+                    Console.WriteLine("banana");
+                }
+                catch (Exception ex)
+                {
+                    Console.Write(ex.ToString());
+                }
 
                 return CreatedAtAction(nameof(BuscarPorId), new { id = holerite.Id }, holerite);
             }
             catch (FileNotFoundException ex)
             {
+                Console.WriteLine("teste");
                 return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 return BadRequest(ex.Message);
             }
         }
@@ -117,7 +160,7 @@ namespace ApiFolhaPagamento.Controllers
 
 
         [HttpGet]
-        //[Authorize(Policy = "Adm")]
+        [Authorize(Policy = "Adm")]
         public ActionResult<List<HoleriteModel>> BuscarTodosOsHolerites()
         {
             var holerites = _holeriteRepositorio.BuscarTodosHolerites();
@@ -176,7 +219,7 @@ namespace ApiFolhaPagamento.Controllers
             }
         }
 
-
+        [ApiExplorerSettings(IgnoreApi = true)]
         //Regra de calculo baseada na fonte https://www.contabilizei.com.br/contabilidade-online/tabela-inss/
         private double CalculaDescontoINSS(double salarioBase)
         {
@@ -206,6 +249,7 @@ namespace ApiFolhaPagamento.Controllers
             return descontoINSS;
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
 
         //regra de cálculo baseada na fonte https://www.pontotel.com.br/calcular-irrf/#:~:text=como%20a%20seguir!-,Como%20funciona%20o%20c%C3%A1lculo%20do%20IRRF%20no%20sal%C3%A1rio%3F,realizar%20o%20c%C3%A1lculo%20do%20IRRF.
         private double CalculaDescontoIRRF(double salarioBase, double descontoINSS)
@@ -236,37 +280,15 @@ namespace ApiFolhaPagamento.Controllers
             return descontoIRRF;
         }
 
-        public void GerarPdf(HoleriteModel holerite)
+        [HttpGet("ReenviarHolerite/{id}")]
+        //[Authorize]
+        public ActionResult<HoleriteModel> ReenviarHolerite(int id)
         {
-            //Document doc = new Document(PageSize.A4);
-            //doc.SetMargins(40, 40, 40, 80);
-            //doc.AddCreationDate();
-            //string caminho = AppDomain.CurrentDomain.BaseDirectory + @"\pdf\" + "relatorio.pdf";
-
-            //PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream(caminho, FileMode.Create));
-
-            //doc.Open();
-
-            //Paragraph titulo = new Paragraph();
-            //titulo.Font = new Font(Font.FontFamily.COURIER, 40);
-            //titulo.Alignment = Element.ALIGN_CENTER;
-            //titulo.Add("Teste \n");
-            //doc.Add(titulo);
-
-            //doc.Close();
-            var renderer = new ChromePdfRenderer(); // Instantiates Chrome Renderer
-
-            // To include elements that are usually removed to save ink during printing we choose screen
-            renderer.RenderingOptions.CssMediaType = IronPdf.Rendering.PdfCssMediaType.Screen;
-
-            var pdf = renderer.RenderUrlAsPdf("https://ironpdf.com/");
-            pdf.SaveAs(holerite.Id.ToString() + ".pdf");
-            EnviarEmail(holerite);
-
-        }
-
-        public void EnviarEmail(HoleriteModel holerite)
-        {
+            var holerite = _holeriteRepositorio.BuscarHoleritePorId(id);
+            if (holerite == null)
+            {
+                return NotFound((new { message = "Holerite não encontrado" }));
+            }
             var colaborador = _colaboradorRepositorio.BuscarPorId(holerite.ColaboradorId);
 
             var emailMessage = new MailMessage();
@@ -275,10 +297,9 @@ namespace ApiFolhaPagamento.Controllers
             emailMessage.To.Add(colaborador.Email);
             emailMessage.IsBodyHtml = true;
 
-            //emailMessage.Body = "<h1>Teste</h1>";
+            emailMessage.Body = "<h1>Holerite</h1>";
 
-            var attachmentPath = holerite.Id.ToString() + ".pdf"; // Substitua pelo caminho do seu arquivo PDF
-            //var attachmentPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "url_saved.pdf");
+            var attachmentPath = holerite.Id.ToString() + ".pdf";
 
             Attachment attachment = new Attachment(attachmentPath, MediaTypeNames.Application.Pdf);
             emailMessage.Attachments.Add(attachment);
@@ -292,11 +313,41 @@ namespace ApiFolhaPagamento.Controllers
             {
                 client.Send(emailMessage);
                 Console.WriteLine("banana");
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Console.Write(ex.ToString());
             }
+            return Ok(holerite);
+        }
 
+        [HttpGet("Holerites-colaborador/{id}")]
+        //[Authorize]
+        public ActionResult<HoleriteModel> HoleritesColaborador(int id)
+        {
+            var holerites = _holeriteRepositorio.BuscarTodosHoleritesColaborador(id);
+            if (holerites == null)
+            {
+                return NotFound((new { message = "Holerites não encontrado" }));
+            }
+            return Ok(holerites);
+        }
+
+        [HttpGet("Holerites-layout/{id}")]
+        //[Authorize]
+        public ActionResult<HoleriteModel> Holeritelayout(int id)
+        {
+            var holerites = _holeriteRepositorio.BuscarHoleritePorId(id);
+            if (holerites == null)
+            {
+                return NotFound((new { message = "Holerites não encontrado" }));
+            }
+
+            var colaborador = _colaboradorRepositorio.BuscarPorId(holerites.ColaboradorId);
+            var cargo = _cargoRepositorio.BuscarPorId(colaborador.CargoId);
+            var tipoHolerite = _tipoHoleriteRepositorio.BuscarPorId(holerites.Tipo);
+            var empresa = _empresaRepositorio.BuscarPorId(colaborador.EmpresaId);
+            return Ok(new { holerite = holerites, colaborador = colaborador, cargo = cargo, tipoHolerite = tipoHolerite, empresa = empresa });
         }
 
     }

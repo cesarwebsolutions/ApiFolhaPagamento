@@ -13,7 +13,7 @@ namespace ApiFolhaPagamento.Models
 
         [ForeignKey(nameof(Colaborador))]
         public int ColaboradorId { get; set; }
-        [JsonIgnore]
+        //[JsonIgnore]
         public virtual ColaboradorModel? Colaborador { get; set; }
 
 
@@ -21,7 +21,7 @@ namespace ApiFolhaPagamento.Models
         [DataType(DataType.Date)]
         public int Mes { get; set; }
 
-        [Display(Name = "Mês")]
+        [Display(Name = "Ano")]
         [DataType(DataType.Date)]
         public int Ano { get; set; }
 
@@ -58,6 +58,9 @@ namespace ApiFolhaPagamento.Models
 
         public int Tipo { get; set; }
 
+        public double? ValorHorasNormais { get; set; } 
+        public double? ValorHorasExtras { get; set; }
+
 
 
 
@@ -66,7 +69,7 @@ namespace ApiFolhaPagamento.Models
 
         }
 
-        public HoleriteModel(int id, ColaboradorModel colaborador, int mes, int ano, double salarioBruto, double descontoInss, double descontoIrrf, double horasNormais, double salarioLiquido, int tipo)
+        public HoleriteModel(int id, ColaboradorModel colaborador, int mes, int ano, double salarioBruto, double descontoInss, double descontoIrrf, double horasNormais, double salarioLiquido, int tipo, double valorHorasNormais, double valorHorasExtras)
         {
             Id = id;
             Colaborador = colaborador;
@@ -78,6 +81,8 @@ namespace ApiFolhaPagamento.Models
             HorasNormais = horasNormais;
             SalarioLiquido = salarioLiquido;
             Tipo = tipo;
+            ValorHorasNormais = valorHorasNormais;
+            ValorHorasExtras = valorHorasExtras;
         }
 
 

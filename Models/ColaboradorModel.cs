@@ -53,8 +53,8 @@ namespace ApiFolhaPagamento.Models
         [JsonIgnore]
         public CargoModel? Cargo { get; set; }
 
-        [Required(ErrorMessage = "O campo {0} é obrigatório")]
-        [ForeignKey(nameof(Cargo))]
+                [Required(ErrorMessage = "O campo {0} é obrigatório")]
+[ForeignKey(nameof(Cargo))]
         public int CargoId { get; set; }
 
 

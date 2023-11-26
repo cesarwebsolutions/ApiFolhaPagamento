@@ -79,5 +79,36 @@ namespace ApiFolhaPagamento.Services
             _dbContext.Holerites.Remove(holerite);
             _dbContext.SaveChanges();
         }
+
+        public List<HoleriteModel> BuscarTodosHoleritesColaborador(int colaboradorId)
+        {
+            Console.WriteLine(colaboradorId);
+            return _dbContext.Holerites
+                .Include(h => h.Colaborador)
+                .Where(h => h.ColaboradorId == colaboradorId)
+                .Select(holerite => new HoleriteModel
+                {
+                    Id = holerite.Id,
+                    ColaboradorId = holerite.ColaboradorId,
+                    Colaborador = new ColaboradorModel
+                    {
+                        Nome = holerite.Colaborador.Nome,
+                        Sobrenome = holerite.Colaborador.Sobrenome,
+                        CPF = holerite.Colaborador.CPF
+                    },
+                    Mes = holerite.Mes,
+                    Ano = holerite.Ano,
+                    SalarioBruto = holerite.SalarioBruto,
+                    DescontoINSS = holerite.DescontoINSS,
+                    DescontoIRRF = holerite.DescontoIRRF,
+                    HorasNormais = holerite.HorasNormais,
+                    HorasExtras = holerite.HorasExtras,
+                    SalarioLiquido = holerite.SalarioLiquido,
+                    DependentesHolerite = holerite.DependentesHolerite,
+                    Tipo = holerite.Tipo,
+                })
+                .ToList();
+        }
+
     }
 }
