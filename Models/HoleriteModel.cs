@@ -61,6 +61,9 @@ namespace ApiFolhaPagamento.Models
         public double? ValorHorasNormais { get; set; } 
         public double? ValorHorasExtras { get; set; }
 
+        public double? PercentualINSS { get; set; }
+        public double? PercentualIRRF { get;set; }
+
 
 
 

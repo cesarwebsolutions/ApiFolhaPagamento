@@ -13,6 +13,7 @@ using IronPdf;
 using System.Net.Mail;
 using System.Net;
 using System.Net.Mime;
+using ApiFolhaPagamento.Migrations;
 
 namespace ApiFolhaPagamento.Controllers
 {
@@ -49,16 +50,16 @@ namespace ApiFolhaPagamento.Controllers
                 {
                     return NotFound("Colaborador não encontrado");
                 }
+
                 var holeriteExistente = _dbContext.Holerites.FirstOrDefault(h =>
-                h.ColaboradorId == holerite.ColaboradorId &&
-                h.Mes == holerite.Mes &&
-                h.Ano == holerite.Ano &&
-                h.Tipo == holerite.Tipo);
+                    h.ColaboradorId == holerite.ColaboradorId &&
+                    h.Mes == holerite.Mes &&
+                    h.Ano == holerite.Ano &&
+                    h.Tipo == holerite.Tipo);
 
                 if (holeriteExistente != null)
                 {
-                    return BadRequest(new { message = "Já existe um Holerite com mesmo Mês/Ano e Tipo cadastrado"});
-
+                    return BadRequest(new { message = "Já existe um Holerite com mesmo Mês/Ano e Tipo cadastrado" });
                 }
 
                 double salarioBase = 0.0;
@@ -67,14 +68,14 @@ namespace ApiFolhaPagamento.Controllers
                 if (holerite.HorasExtras.HasValue)
                 {
                     // Calcula o Salário Bruto baseado nas horas trabalhadas e nas horas extras
-                    double percentualSalarioBase = (holerite.HorasNormais.Value / 220); // 220 é a carga horária padrão
+                    double percentualSalarioBase = holerite.HorasNormais.Value / 220.0; // 220 é a carga horária padrão
                     salarioBase = Math.Round(colaborador.SalarioBase * percentualSalarioBase, 2);
                     holerite.ValorHorasNormais = salarioBase;
 
                     // Define a taxa de adicional para horas extras (50% é comum, mas pode variar)
                     double taxaAdicional = 0.5; // 50% de adicional
 
-                    double valorHoraExtra = salarioBase / 220 * taxaAdicional;
+                    double valorHoraExtra = salarioBase / 220.0 * taxaAdicional;
                     holerite.ValorHorasExtras = valorHoraExtra;
                     double salarioBruto = salarioBase + (holerite.HorasExtras.Value * valorHoraExtra);
 
@@ -83,16 +84,20 @@ namespace ApiFolhaPagamento.Controllers
                 else
                 {
                     // Calcula o Salário Bruto apenas com as horas normais
-                    double percentualSalarioBase = (holerite.HorasNormais.Value / 220); // 220 é a carga horária padrão
+                    double percentualSalarioBase = holerite.HorasNormais.Value / 220.0; // 220 é a carga horária padrão
                     salarioBase = Math.Round(colaborador.SalarioBase * percentualSalarioBase, 2);
                     holerite.SalarioBruto = salarioBase;
                 }
 
-                // Calcula o desconto INSS
-                holerite.DescontoINSS = Math.Round(CalculaDescontoINSS(holerite.SalarioBruto.Value), 2);
+                // Calcula o desconto INSS e obtém o percentual
+                double percentualINSS;
+                holerite.DescontoINSS = Math.Round(CalculaDescontoINSS(holerite.SalarioBruto.Value, out percentualINSS), 2);
+                holerite.PercentualINSS = percentualINSS;
 
                 // Calcula o desconto IRRF
-                holerite.DescontoIRRF = Math.Round(CalculaDescontoIRRF(holerite.SalarioBruto.Value, holerite.DescontoINSS ?? 0.0), 2);
+                double percentualIRRF;
+                holerite.DescontoIRRF = Math.Round(CalculaDescontoIRRF(holerite.SalarioBruto.Value, holerite.DescontoINSS ?? 0.0, out percentualIRRF), 2);
+                holerite.PercentualIRRF = percentualIRRF;
 
                 // Soma os descontos
                 double descontos = holerite.DescontoINSS.Value + holerite.DescontoIRRF.Value;
@@ -101,8 +106,7 @@ namespace ApiFolhaPagamento.Controllers
                 holerite.SalarioLiquido = Math.Round(holerite.SalarioBruto.Value - descontos, 2);
                 holerite.DependentesHolerite = (int)colaborador.Dependentes;
 
-
-
+                // Adiciona o Holerite ao banco de dados
                 _holeriteRepositorio.AdicionarHolerite(holerite);
 
                 HoleriteModel teste = _holeriteRepositorio.BuscarHoleritePorId(holerite.Id);
@@ -156,6 +160,8 @@ namespace ApiFolhaPagamento.Controllers
             }
         }
 
+
+       
 
 
 
@@ -221,29 +227,35 @@ namespace ApiFolhaPagamento.Controllers
 
         [ApiExplorerSettings(IgnoreApi = true)]
         //Regra de calculo baseada na fonte https://www.contabilizei.com.br/contabilidade-online/tabela-inss/
-        private double CalculaDescontoINSS(double salarioBase)
+        private double CalculaDescontoINSS(double salarioBase, out double percentualINSS)
         {
             double descontoINSS = 0.0;
+            percentualINSS = 0.0;
 
             if (salarioBase <= 1320.00)
             {
                 descontoINSS = salarioBase * 0.075; // 7.5%
+                percentualINSS = 7.5;
             }
             else if (salarioBase <= 2571.29)
             {
                 descontoINSS = salarioBase * 0.09; // 9%
+                percentualINSS = 9.0;
             }
             else if (salarioBase <= 3856.94)
             {
                 descontoINSS = salarioBase * 0.12; // 12%
+                percentualINSS = 12.0;
             }
             else if (salarioBase <= 7507.49)
             {
                 descontoINSS = salarioBase * 0.14; // 14%
+                percentualINSS = 14.0;
             }
             else
             {
                 descontoINSS = 7507.49 * 0.14; // Valor máximo para a alíquota de 14%
+                percentualINSS = 14.0;
             }
 
             return descontoINSS;
@@ -252,7 +264,7 @@ namespace ApiFolhaPagamento.Controllers
         [ApiExplorerSettings(IgnoreApi = true)]
 
         //regra de cálculo baseada na fonte https://www.pontotel.com.br/calcular-irrf/#:~:text=como%20a%20seguir!-,Como%20funciona%20o%20c%C3%A1lculo%20do%20IRRF%20no%20sal%C3%A1rio%3F,realizar%20o%20c%C3%A1lculo%20do%20IRRF.
-        private double CalculaDescontoIRRF(double salarioBase, double descontoINSS)
+        private double CalculaDescontoIRRF(double salarioBase, double descontoINSS, out double percentualIRRF)
         {
             double descontoIRRF = 0.0;
             double salarioBaseAjustado = salarioBase - descontoINSS;
@@ -260,22 +272,33 @@ namespace ApiFolhaPagamento.Controllers
             if (salarioBaseAjustado <= 1903.98)
             {
                 descontoIRRF = 0;
+                percentualIRRF = 0.0;
+
+
             }
             else if (salarioBaseAjustado <= 2826.65)
             {
                 descontoIRRF = (salarioBaseAjustado * 0.075) - 142.80;
+                percentualIRRF = 7.5;
+
             }
             else if (salarioBaseAjustado <= 3751.05)
             {
                 descontoIRRF = (salarioBaseAjustado * 0.15) - 354.80;
+                percentualIRRF = 15.0;
+
             }
             else if (salarioBaseAjustado <= 4664.68)
             {
                 descontoIRRF = (salarioBaseAjustado * 0.225) - 636.13;
+                percentualIRRF = 22.5;
+
             }
             else
             {
                 descontoIRRF = (salarioBaseAjustado * 0.275) - 869.36;
+                percentualIRRF = 27.0;
+
             }
             return descontoIRRF;
         }
@@ -348,6 +371,27 @@ namespace ApiFolhaPagamento.Controllers
             var tipoHolerite = _tipoHoleriteRepositorio.BuscarPorId(holerites.Tipo);
             var empresa = _empresaRepositorio.BuscarPorId(colaborador.EmpresaId);
             return Ok(new { holerite = holerites, colaborador = colaborador, cargo = cargo, tipoHolerite = tipoHolerite, empresa = empresa });
+        }
+
+        [HttpGet("Relatorio/{mes}/{ano}")]
+        public IActionResult GerarRelatorio(string mes, string ano)
+        {
+
+            var renderer = new ChromePdfRenderer();
+
+            renderer.RenderingOptions.CssMediaType = IronPdf.Rendering.PdfCssMediaType.Screen;
+
+            var pdf = renderer.RenderUrlAsPdf("http://localhost:4200/relatorio/" +  mes + "/" + ano );
+            pdf.SaveAs("Relatorio.pdf");
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Relatorio.pdf");
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound();
+            }
+
+            var fileBytes = System.IO.File.ReadAllBytes(filePath);
+            return File(fileBytes, "application/pdf", "Relatorio.pdf");
         }
 
     }

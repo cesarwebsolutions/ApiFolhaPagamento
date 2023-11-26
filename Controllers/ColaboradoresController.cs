@@ -57,7 +57,7 @@ namespace ApiFolhaPagamento.Controllers.API
                 {
                     return BadRequest((new { message = "Já existe um Colaborador com mesmo CPF" }));
                 }
-                var existingemail = _colaboradorRepositorio.BuscarPorEmail(colaborador.CPF);
+                var existingemail = _colaboradorRepositorio.BuscarPorEmail(colaborador.Email);
 
                 if (existingemail != null)
                 {

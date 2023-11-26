@@ -13,7 +13,6 @@ namespace ApiFolhaPagamento.Controllers
     public class LoginController : ControllerBase
     {
         private readonly ILogin _loginRepositorio;
-        private readonly IUsuarioRepositorio _usuarioRepositorio;
 
         public LoginController(ILogin loginRepositorio)
         {
