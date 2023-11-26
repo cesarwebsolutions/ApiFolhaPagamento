@@ -143,17 +143,7 @@ namespace ApiFolhaPagamento
                         dbContext.Permissoes.Add(permissaoAdmin);
                     }
 
-                    // Verificar se a permissão 'USER' já existe no banco de dados
-                    if (!dbContext.Permissoes.Any(p => p.Permissao == "USER"))
-                    {
-                        // Se não existir, crie a permissão 'USER'
-                        var permissaoUser = new Permissoes
-                        {
-                            Permissao = "USER"
-                        };
-
-                        dbContext.Permissoes.Add(permissaoUser);
-                    }
+                 
 
                     await dbContext.SaveChangesAsync();
                     Console.WriteLine("Permissões 'ADMIN' e 'USER' foram adicionadas ao banco de dados.");

@@ -20,8 +20,37 @@ namespace ApiFolhaPagamento.Services
 
         public List<ColaboradorModel> BuscarTodosColaboradores()
         {
-            return _dbContext.Colaboradores.ToList();
+            return _dbContext.Colaboradores
+                .Include(colaborador => colaborador.Cargo)
+                .Select(colaborador => new ColaboradorModel
+                {
+                    Id = colaborador.Id,
+                    CPF = colaborador.CPF,
+                    Nome = colaborador.Nome,
+                    Sobrenome = colaborador.Sobrenome,
+                    Email = colaborador.Email,
+                    SalarioBase = colaborador.SalarioBase,
+                    DataNascimento = colaborador.DataNascimento,
+                    DataAdmissao = colaborador.DataAdmissao,
+                    Dependentes = colaborador.Dependentes,
+                    Filhos = colaborador.Filhos,
+                    CargoId = colaborador.CargoId,
+                    EmpresaId = colaborador.EmpresaId,
+                    CEP = colaborador.CEP,
+                    Logradouro = colaborador.Logradouro,
+                    Numero = colaborador.Numero,
+                    Bairro = colaborador.Bairro,
+                    Cidade = colaborador.Cidade,
+                    Estado = colaborador.Estado,
+                    Cargo = new CargoModel
+                    {
+                        Id = colaborador.Cargo.Id,
+                        Nome = colaborador.Cargo.Nome
+                    }
+                })
+                .ToList();
         }
+
 
         public void Adicionar(ColaboradorModel obj)
         {
@@ -65,31 +94,38 @@ namespace ApiFolhaPagamento.Services
         public List<ColaboradorModel> BuscarColaboradoresAtivos()
         {
             return _dbContext.Colaboradores
-                 .Where(c => c.Ativo == true)
-                 .Select(colaborador => new ColaboradorModel
-                 {
-                     Id = colaborador.Id,
-                     CPF = colaborador.CPF,
-                     Nome = colaborador.Nome,
-                     Sobrenome = colaborador.Sobrenome,
-                     Email = colaborador.Email,
-                     SalarioBase = colaborador.SalarioBase,
-                     DataNascimento = colaborador.DataNascimento,
-                     DataAdmissao = colaborador.DataAdmissao,
-                     Dependentes = colaborador.Dependentes,
-                     Filhos = colaborador.Filhos,
-                     CargoId = colaborador.CargoId,
-                     EmpresaId = colaborador.EmpresaId,
-                     CEP = colaborador.CEP,
-                     Logradouro = colaborador.Logradouro,
-                     Numero = colaborador.Numero,
-                     Bairro = colaborador.Bairro,
-                     Cidade = colaborador.Cidade,
-                     Estado = colaborador.Estado,
-
-                 })
-                 .ToList();
+                .Where(c => c.Ativo)
+                .Include(colaborador => colaborador.Cargo) // Certifique-se de incluir o cargo
+                .Select(colaborador => new ColaboradorModel
+                {
+                    Id = colaborador.Id,
+                    CPF = colaborador.CPF,
+                    Nome = colaborador.Nome,
+                    Sobrenome = colaborador.Sobrenome,
+                    Email = colaborador.Email,
+                    SalarioBase = colaborador.SalarioBase,
+                    DataNascimento = colaborador.DataNascimento,
+                    DataAdmissao = colaborador.DataAdmissao,
+                    Dependentes = colaborador.Dependentes,
+                    Filhos = colaborador.Filhos,
+                    CargoId = colaborador.CargoId,
+                    EmpresaId = colaborador.EmpresaId,
+                    CEP = colaborador.CEP,
+                    Logradouro = colaborador.Logradouro,
+                    Numero = colaborador.Numero,
+                    Bairro = colaborador.Bairro,
+                    Cidade = colaborador.Cidade,
+                    Estado = colaborador.Estado,
+                    Cargo = new CargoModel
+                    {
+                        Id = colaborador.Cargo.Id,
+                        Nome = colaborador.Cargo.Nome
+                    }
+                })
+                .ToList();
         }
+
+
         public List<ColaboradorModel> BuscarColaboradoresInativos()
         {
             return _dbContext.Colaboradores

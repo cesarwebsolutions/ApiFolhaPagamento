@@ -50,12 +50,12 @@ namespace ApiFolhaPagamento.Models
         public int? Dependentes { get; set; }
         public int? Filhos { get; set; }
 
-        [JsonIgnore]
         public CargoModel? Cargo { get; set; }
 
                 [Required(ErrorMessage = "O campo {0} é obrigatório")]
 [ForeignKey(nameof(Cargo))]
         public int CargoId { get; set; }
+
 
 
         [JsonIgnore]
